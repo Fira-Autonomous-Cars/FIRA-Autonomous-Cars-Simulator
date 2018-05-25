@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<launch>
+
+  <include file="$(find catvehicle_gazebo)/launch/catvehicle_gazebo_main.launch">
+    <arg name="world_name" value="$(find catvehicle)/worlds/barrels_mod6.world"/>
+    <arg name="control_launch_file" value="$(find catvehicle)/launch/catvehicle_control_noobstacle.launch"/>
+  </include>
+
+</launch>
