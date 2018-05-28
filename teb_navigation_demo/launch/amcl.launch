@@ -2,7 +2,7 @@
 
 <launch>
 
-  <arg name="map_file" default="$(find teb_navigation)/maps/my_map2.yaml"/>
+  <arg name="map_file" default="$(find teb_navigation_demo)/maps/my_map2.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
   
   <arg name="use_map_topic" default="true"/>
