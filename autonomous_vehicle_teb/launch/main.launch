@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<launch>
+
+  <include file="$(find catvehicle_gazebo)/launch/catvehicle_gazebo_main.launch">
+    <arg name="world_name" value="$(find catvehicle)/worlds/barrels_mod6.world"/>
+    <!-- <arg name="world_name" value="$(find husky_exam)/worlds/clearpath_playpen.world"/> -->
+  </include>
+
+  <include file="$(find catvehicle_tests)/launch/cmdvel_unsafetest.launch">
+  </include>
+
+</launch>

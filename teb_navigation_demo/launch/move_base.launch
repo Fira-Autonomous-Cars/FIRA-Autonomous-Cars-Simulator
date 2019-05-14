@@ -1,0 +1,33 @@
+<launch>
+  
+  <!-- Run the map server -->
+  <!-- <node name="map_server" pkg="map_server" type="map_server" args="$(find teb_navigation_demo)/maps/my_map2.yaml"/> -->
+
+  <!--- Run AMCL -->
+  <include file="$(find teb_navigation_demo)/launch/amcl.launch" />
+
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+    <param name="base_global_planner" value="navfn/NavfnROS"/>
+    <!-- <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS"/> -->
+    <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS"/>
+    <rosparam file="$(find teb_navigation_demo)/config/base_global_planner.yaml" command="load"/>
+    <rosparam file="$(find teb_navigation_demo)/config/teb_local_planner.yaml" command="load"/>
+
+    <!-- observation sources located in costmap_common.yaml -->
+    <rosparam file="$(find teb_navigation_demo)/config/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find teb_navigation_demo)/config/costmap_common_params.yaml" command="load" ns="local_costmap" />
+
+    <!-- local costmap, needs size -->
+    <rosparam file="$(find teb_navigation_demo)/config/local_costmap_params.yaml" command="load" ns="local_costmap" />
+    <param name="local_costmap/width" value="10.0"/>
+    <param name="local_costmap/height" value="10.0"/>
+
+    <!-- static global costmap, static map provides size -->
+    <rosparam file="$(find teb_navigation_demo)/config/global_costmap_params.yaml" command="load" ns="global_costmap"/>
+    
+    <remap from="cmd_vel" to="/cmd_vel"/>
+    
+  </node>
+
+</launch>

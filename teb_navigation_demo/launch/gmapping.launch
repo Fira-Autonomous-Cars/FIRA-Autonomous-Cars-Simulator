@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="scan_topic" default="/catvehicle/front_laser_points" />
+
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping">
+    <rosparam>
+      odom_frame: /catvehicle/odom
+      base_frame: /catvehicle/base_link
+      map_frame: map
+
+      map_update_interval: 0.5 # Publish new map
+
+      maxUrange: 10.0 # Should be just less than sensor range
+      maxRange: 12.0 # Should be just greater than sensor range
+      particles: 100 # Increased from 80
+
+      # Update frequencies
+      linearUpdate: 0.3
+      angularUpdate: 0.5
+      temporalUpdate: -1.0
+      resampleThreshold: 0.5
+
+      # Initial Map Size
+      xmin: -1.0
+      ymin: -1.0
+      xmax: 1.0
+      ymax: 1.0
+      delta: 0.05
+
+      # All default
+      sigma: 0.05
+      kernelSize: 1
+      lstep: 0.05
+      astep: 0.05
+      iterations: 5
+      lsigma: 0.075
+      ogain: 3.0
+      lskip: 0
+      llsamplerange: 0.01
+      llsamplestep: 0.01
+      lasamplerange: 0.005
+      lasamplestep: 0.005
+
+    </rosparam>
+    <remap from="scan" to="$(arg scan_topic)"/>
+  </node>
+</launch>

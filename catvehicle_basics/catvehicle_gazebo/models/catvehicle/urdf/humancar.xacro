@@ -336,10 +336,10 @@
   <transmission name="tran1">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="back_right_wheel_joint">
-      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor1">
-      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -347,10 +347,10 @@
   <transmission name="tran2">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="back_left_wheel_joint">
-      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor2">
-      <hardwareInterface>VelocityJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
