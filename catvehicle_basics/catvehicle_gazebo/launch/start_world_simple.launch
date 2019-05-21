@@ -9,6 +9,9 @@
   <arg default="false" name="debug" />
   <arg name="world_name" default="$(find catvehicle)/worlds/autonomous_simple.world"/>
 
+    <arg name="put_robot_in_world" default="false" />
+    <arg name="put_robot_in_world_package" default="" />
+    <arg name="put_robot_in_world_launch" default="" />
 
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <arg name="world_name" value="$(arg world_name)"/>
@@ -18,5 +21,10 @@
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
   </include>
+
+
+  <group if="$(arg put_robot_in_world)">
+        <include file="$(eval find(put_robot_in_world_package) + '/launch/' + put_robot_in_world_launch)"/>
+    </group>
 
 </launch>

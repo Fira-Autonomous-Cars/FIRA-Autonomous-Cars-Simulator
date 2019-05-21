@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+    <arg name="put_robot_in_world" default="true" />
+    <arg name="put_robot_in_world_package" default="catvehicle_gazebo" />
+    <arg name="put_robot_in_world_launch" default="put_robot_in_world.launch" />
+
+    <include file="$(find catvehicle_gazebo)/launch/start_world_simple.launch">
+        <arg name="put_robot_in_world" value="$(arg put_robot_in_world)" />
+        <arg name="put_robot_in_world_package" value="$(arg put_robot_in_world_package)" />
+        <arg name="put_robot_in_world_launch" value="$(arg put_robot_in_world_launch)" />
+    </include>
+</launch>
