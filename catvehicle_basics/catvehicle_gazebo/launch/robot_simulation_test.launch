@@ -4,10 +4,22 @@
     <arg name="put_robot_in_world" default="true" />
     <arg name="put_robot_in_world_package" default="catvehicle_gazebo" />
     <arg name="put_robot_in_world_launch" default="put_robot_in_world.launch" />
+    <arg name="x" default="0.0" />
+    <arg name="y" default="0.0" />
+    <arg name="z" default="0.0" />
+    <arg name="roll" default="0.0"/>
+    <arg name="pitch" default="0.0"/>
+    <arg name="yaw" default="0.0"/>
 
     <include file="$(find catvehicle_gazebo)/launch/start_world_simple.launch">
         <arg name="put_robot_in_world" value="$(arg put_robot_in_world)" />
         <arg name="put_robot_in_world_package" value="$(arg put_robot_in_world_package)" />
         <arg name="put_robot_in_world_launch" value="$(arg put_robot_in_world_launch)" />
+        <arg name="x" value="$(arg x)" />
+        <arg name="y" value="$(arg y)" />
+        <arg name="z" value="$(arg z)" />
+        <arg name="roll" value="$(arg roll)"/>
+        <arg name="pitch" value="$(arg pitch)"/>
+        <arg name="yaw" value="$(arg yaw)" />
     </include>
 </launch>
