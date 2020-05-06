@@ -4,9 +4,10 @@
   
   <arg default="false" name="paused" />
   <arg default="true" name="use_sim_time" />
-  <arg default="false" name="gui" />
+  <arg default="true" name="gui" />
   <arg default="false" name="headless" />
   <arg default="false" name="debug" />
+  <arg default="true" name="verbose" />
   <arg name="world_name" default=""/>
   <arg name="control_launch_file" default="$(find catvehicle)/launch/catvehicle_control.launch"/>
 
@@ -17,6 +18,7 @@
     <arg name="world_name" value="$(arg world_name)"/>
     <arg name="debug" value="$(arg debug)" />
     <arg name="gui" value="$(arg gui)" />
+    <arg name="verbose" value="$(arg verbose)" />
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="headless" value="$(arg headless)"/>
