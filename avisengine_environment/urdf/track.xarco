@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<robot name="$(arg roboname)" xmlns:xacro="http://ros.org/wiki/xacro">
+  <link name="base_link">
+    <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>  
+        <geometry>
+            <mesh filename="package://avisengine_environment/meshes/mesh_road.dae"/>
+        </geometry>
+    </collision>
+     <visual>
+        <origin xyz="1 0 0" rpy="0 0 0"/>  
+        <geometry>
+            <mesh filename="package://avisengine_environment/meshes/mesh_road.dae"/>
+        </geometry>
+    </visual>
+  </link>
+</robot>

@@ -94,6 +94,7 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
+      
       <model name='unit_box'>
         <pose frame=''>9.48877 5.53976 0.499995 1e-05 -0 0</pose>
         <scale>1 1 1</scale>
@@ -407,6 +408,8 @@
         <kinematic>0</kinematic>
       </link>
     </model>
+    
+
     <gui fullscreen='0'>
       <camera name='user_camera'>
         <pose frame=''>15.8407 -15.4284 7.61513 0 0.399643 2.3122</pose>

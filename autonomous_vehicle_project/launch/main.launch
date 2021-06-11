@@ -2,7 +2,7 @@
 <launch>
 
   <include file="$(find catvehicle_gazebo)/launch/catvehicle_gazebo_main.launch">
-    <arg name="world_name" value="$(find catvehicle)/worlds/drc_import_1.world"/>
+    <arg name="world_name" value="$(find catvehicle)/worlds/village.world"/>
   </include>
 
 </launch>

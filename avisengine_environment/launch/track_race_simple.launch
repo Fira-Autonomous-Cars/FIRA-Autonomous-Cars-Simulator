@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<launch>
+  <include file="$(find catvehicle_gazebo)/launch/catvehicle_gazebo_main.launch">
+    <arg name="world_name" value="$(find avisengine_environment)/worlds/world_race.world"/>
+  </include>
+</launch>

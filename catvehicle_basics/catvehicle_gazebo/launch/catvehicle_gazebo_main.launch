@@ -28,6 +28,15 @@
   <param command="$(find xacro)/xacro.py '$(find catvehicle)/urdf/catvehicle_mod.xacro' roboname:='catvehicle'" name="robot_description" />
   <node args="-urdf -model catvehicle -param robot_description -x -0.08 -y -0.09 -z 0.785" name="urdf_spawner" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model" />
 
+<!-- 
+  <param name="track_model" textfile="$(find avisengine_environment)/models/track.sdf" />
+
+  <node name="spawn_track" pkg="gazebo" type="track_model" args="-gazebo -param track_model -model race_track" respawn="false" output="screen" /> -->
+
+  <!-- <param name="robot_description" command="rosrun xacro xacro '$(find avisengine_environment)/urdf/track.xarco' roboname:='race_track' inorder"/> -->
+  <!-- <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-file $(find avisengine_environment)/urdf/track.urdf -urdf -z 1 -model race_track" /> -->
+  <!-- <node args="-urdf -file '$(find avisengine_environment)/urdf/track.urdf' -x -0.08 -y -0.09 -z 0.785" name="urdf_spawner_1" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model" /> -->
+
   <include file="$(arg control_launch_file)">
     <arg name="robot_name" value="catvehicle"/>
     <arg name="config_file" value="catvehicle_control.yaml"/>

@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<launch>
+    <node pkg="avisengine_environment" name="avisengine_environment" type="model_updater.py" output="screen" required="true"/>
+</launch>
+
