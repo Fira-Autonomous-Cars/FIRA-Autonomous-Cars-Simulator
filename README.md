@@ -48,5 +48,17 @@ The car can also be driven manually by launching the following command:
 ```bash
 roslaunch catvehicle_tests cmdvel_unsafetest.launch 
 ```
+use the keys in your keyboard to drive the car manually:
+i : Move Forward
+, : Move Backward
+
+u : Turn Left and Forward
+o : Turn Right and Forward
+
+m : Turn Left and Backward
+. : Turn Right and Backward
+
+k : Center and stop
+q, z : Increase or decrease speed
 
 
