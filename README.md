@@ -62,5 +62,5 @@ k : Center and stop <br/>
 q, z : Increase or decrease speed <br/>
 
 ### Customizing the Track
-You can customize the race track by modifying the 3D file in [avisengine_environment/meshes/mesh_road.blend](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/avisengine_environment/meshes/mesh_road.blend) using [blender](https://www.blender.org/) which is a free and open-source 3D computer graphics software.
+You can customize the race track by modifying the 3D file in [avisengine_environment/meshes/mesh_road.blend](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/avisengine_environment/meshes/mesh_road.blend) using [Blender](https://www.blender.org/) which is a free and **open-source 3D computer graphics software**.
 The instructions on how to modify this file is written in the blender file. 
