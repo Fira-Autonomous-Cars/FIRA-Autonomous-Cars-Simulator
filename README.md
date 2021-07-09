@@ -14,6 +14,8 @@ Prior to installing our software make sure to have ROS and Catkin tools installe
 sudo apt install python-rosinstall python-rosinstall-generator python-wstool build-essential
 sudo apt-get install python-catkin-tools
 sudo apt install python-wstool
+sudo apt install ros-kinetic-ros-control 
+sudo apt-get install ros-kinetic-gazebo-ros-control ros-kinetic-position-controllers ros-kinetic-ros-controllers ros-kinetic-velodyne ros-kinetic-velodyne-driver 
 pip install catkin_pkg
 ```
 
