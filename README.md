@@ -32,8 +32,10 @@ git clone https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator
 cd ..
 catkin_make
 source ~/.bashrc
+roslaunch avisengine_environment update_world.launch #Important : This command will update every static paths in this package. Make sure to run this, otherwise the gazebo simulator won't run correctly.
 ```
 The installation process is done.
+
 
 ### Running the simulator
 After successfully finishing the installation process, everything is ready.
