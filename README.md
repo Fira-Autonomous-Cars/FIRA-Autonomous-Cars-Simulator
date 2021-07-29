@@ -2,6 +2,16 @@
 FIRA Autonomous Cars Simulator for FIRARoboWorldCup Competition.
 The instructions necessary for getting started is available below.
 
+
+### Changelog
+## 1.0.2
+  - Removed ground plane from race track world
+  - Modified Race Track mesh
+  - Changed initial position of the car to be on the track
+  - Added an example_pkg package to demonstrate a basic usage of topics and driving the vehicle
+  - Modified the ambient color of the scene in the race track
+  - Added sky and clouds to the race track
+
 ### Tested Minimum Local Hardware Requirements
 CPU: Intel® Core™ i5-5257U CPU @ 2.70GHz <br/>
 GPU: Intel® Iris 6100 <br/>
@@ -43,7 +53,8 @@ Launching the following command will start the gazebo simulator in the race trac
 ```bash
 roslaunch avisengine_environment track_race_simple.launch 
 ```
-You can get the front camera image from /catvehicle/camera_front/image_raw_front/compressed topic and can send steering and velocity through their topics.
+You can get the front camera image from /catvehicle/camera_front/image_raw_front/compressed topic and can send control commands using a Twist message to /catvehicle/cmd_vel.
+
 Get a list of topics by running the following command:
 ```bash
 rostopic list
@@ -64,6 +75,12 @@ m : Turn Left and Backward <br/>
 <br/>
 k : Center and stop <br/>
 q, z : Increase or decrease speed <br/>
+
+### Usage of the example package
+There is an example package in [/example_pkg](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/tree/main/example_pkg) that demonstrates a basic usage of the simulator in python. 
+[/example_pkg/src/drive.py](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/example_pkg/src/drive.py) is used to drive the vehicle and [/example_pkg/src/imageReceive.py](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/example_pkg/src/imageReceive.py) is used to receive image from the vehicle. 
+The drive node uses Twist message to control the vehicle through the /catvehicle/cmd_vel topic.
+
 
 ### Customizing the Track
 You can customize the race track by modifying the 3D file in [avisengine_environment/meshes/mesh_road.blend](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/avisengine_environment/meshes/mesh_road.blend) using [Blender](https://www.blender.org/) which is a free and **open-source 3D computer graphics software**.
