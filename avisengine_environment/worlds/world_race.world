@@ -13,52 +13,7 @@
       </attenuation>
       <direction>-0.5 0.5 -1</direction>
     </light>
-    <model name="ground_plane">
-      <static>1</static>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <plane>
-              <normal>0 0 1</normal>
-              <size>100 100</size>
-            </plane>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>100</mu>
-                <mu2>50</mu2>
-              </ode>
-              <torsional>
-                <ode />
-              </torsional>
-            </friction>
-            <contact>
-              <ode />
-            </contact>
-            <bounce />
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name="visual">
-          <cast_shadows>0</cast_shadows>
-          <geometry>
-            <plane>
-              <normal>0 0 1</normal>
-              <size>100 100</size>
-            </plane>
-          </geometry>
-          <material>
-            <script>
-              <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/Grey</name>
-            </script>
-          </material>
-        </visual>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-      </link>
-    </model>
+    
     <gravity>0 0 -9.8</gravity>
     <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
     <atmosphere type="adiabatic" />
@@ -68,9 +23,13 @@
       <real_time_update_rate>1000</real_time_update_rate>
     </physics>
     <scene>
-      <ambient>0.4 0.4 0.4 1</ambient>
-      <background>0.7 0.7 0.7 1</background>
-      <shadows>1</shadows>
+      <ambient>100.0 100.0 100.0 1.0</ambient>
+      <shadows>0</shadows>
+      <sky>
+        <clouds>
+          <speed>12</speed>
+        </clouds>
+      </sky>
     </scene>
     <spherical_coordinates>
       <surface_model>EARTH_WGS84</surface_model>
@@ -83,18 +42,7 @@
       <sim_time>191 742000000</sim_time>
       <real_time>192 364914993</real_time>
       <wall_time>1497611230 87541147</wall_time>
-      <iterations>191742</iterations>
-      <model name="ground_plane">
-        <pose frame="">0 0 0 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name="link">
-          <pose frame="">0 0 0 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      
+      <iterations>191742</iterations>  
       
       <light name="sun">
         <pose frame="">0 0 10 0 -0 0</pose>
@@ -102,7 +50,7 @@
     </state>
     <model name="race_track">
       <link name="race_track_link">
-        <pose frame="">0 0 0 0 -0 0</pose>
+        <pose frame="">88.291962 -17.762388 0 0 -0 0</pose>
         <self_collide>0</self_collide>
         <kinematic>0</kinematic>
         <gravity>1</gravity>
@@ -121,7 +69,7 @@
         <visual name="race_track_visual">
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road.dae</uri>
+              <uri>/home/amirmohammad/catkin_ws/src/FIRA-Autonomous-Cars-Simulator/avisengine_environment/meshes/mesh_road.dae</uri>
             </mesh>
           </geometry>
           <pose frame="">0 0 0 0 -0 0</pose>
@@ -139,7 +87,7 @@
           <pose frame="">0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road.dae</uri>
+              <uri>/home/amirmohammad/catkin_ws/src/FIRA-Autonomous-Cars-Simulator/avisengine_environment/meshes/mesh_road.dae</uri>
             </mesh>
           </geometry>
           <surface>
