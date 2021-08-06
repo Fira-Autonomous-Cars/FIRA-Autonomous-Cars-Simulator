@@ -83,5 +83,10 @@ The drive node uses Twist message to control the vehicle through the /catvehicle
 
 
 ### Customizing the Track
+![Screenshot](https://drive.google.com/uc?export=view&id=1oJH5bNRIKqogS_7FeN3fB1J4HJtgAz7f) |
+------------ |
+Race track mesh in blender |
+
+
 You can customize the race track by modifying the 3D file in [avisengine_environment/meshes/mesh_road.blend](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/avisengine_environment/meshes/mesh_road.blend) using [Blender](https://www.blender.org/) which is a free and **open-source 3D computer graphics software**.
 The instructions on how to modify this file is written in the blender file. 
