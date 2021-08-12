@@ -5,6 +5,8 @@ The instructions necessary for getting started is available below.
 
 ### Changelog
 ## 1.0.2
+  - Updated Race Track. (Priliminary Stage track)
+## 1.0.2
   - Removed ground plane from race track world
   - Modified Race Track mesh
   - Changed initial position of the car to be on the track
