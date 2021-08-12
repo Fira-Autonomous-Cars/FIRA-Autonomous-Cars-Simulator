@@ -4,7 +4,7 @@ The instructions necessary for getting started is available below.
 
 
 ### Changelog
-## 1.0.2
+## 1.0.3
   - Updated Race Track. (Priliminary Stage track)
 ## 1.0.2
   - Removed ground plane from race track world
