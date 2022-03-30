@@ -1,0 +1,17 @@
+uint8 num
+
+uint8 NONE=0
+uint8 DRIVE_D01=1
+uint8 DRIVE_D02=2
+uint8 DRIVE_D03=3
+uint8 DRIVE_D04=4
+uint8 DRIVE_D05=5
+uint8 DRIVE_D06=6
+uint8 DRIVE_D07=7
+uint8 DRIVE_D08=8
+uint8 DRIVE_D09=9
+uint8 DRIVE_D10=10
+uint8 NEUTRAL=16
+uint8 REVERSE_R01=17
+uint8 REVERSE_R02=18
+uint8 PARK=31

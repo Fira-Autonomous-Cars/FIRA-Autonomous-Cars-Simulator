@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2016, Dataspeed Inc.
+ *  Copyright (c) 2015-2018, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,6 +35,7 @@
 #ifndef TWISTCONTROLLERNODE_H_
 #define TWISTCONTROLLERNODE_H_
 
+// ROS and messages
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
 #include <sensor_msgs/Imu.h>
@@ -48,20 +49,25 @@
 #include <dbw_mkz_msgs/TwistCmd.h>
 #include <geometry_msgs/TwistStamped.h>
 
+// Debug message
+#include <std_msgs/Float64.h>
+
+// Dynamic Reconfigure
 #include <dynamic_reconfigure/server.h>
 #include <dbw_mkz_twist_controller/ControllerConfig.h>
 
+// Controllers
 #include "YawControl.h"
 #include "PidControl.h"
 #include "LowPass.h"
 
-#include <std_msgs/Float64.h>
-
 namespace dbw_mkz_twist_controller {
+
+static const double GAS_DENSITY = 2.858; // kg/gal
 
 class TwistControllerNode{
 public:
-  TwistControllerNode(ros::NodeHandle n, ros::NodeHandle pn);
+  TwistControllerNode(ros::NodeHandle &n, ros::NodeHandle &pn);
 private:
   void reconfig(ControllerConfig& config, uint32_t level);
   void controlCallback(const ros::TimerEvent& event);
@@ -106,10 +112,10 @@ private:
   double acker_track_;
   double steering_ratio_;
 
-  static const double GAS_DENSITY = 2.858; // kg/gal
   static double mphToMps(double mph) { return mph * 0.44704; }
 };
 
 }
 
 #endif /* TWISTCONTROLLERNODE_H_ */
+

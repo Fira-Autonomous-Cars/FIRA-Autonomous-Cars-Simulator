@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2016, Dataspeed Inc.
+ *  Copyright (c) 2015-2018, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ ros::Publisher pub_twist, pub_twist2;
 
 // Static functions
 static double mphToMps(double mph) { return mph * 0.44704; }
-static double kphToMps(double mph) { return mph * 0.277778; }
+static double kphToMps(double kph) { return kph * 0.277778; }
 static double yawRateFromRadius(double speed, double radius) {
   return radius != 0.0 ? speed / radius : 0.0;
 }
@@ -114,3 +114,4 @@ int main(int argc, char** argv)
 
   return 0;
 }
+

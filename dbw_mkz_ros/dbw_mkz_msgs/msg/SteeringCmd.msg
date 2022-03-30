@@ -1,15 +1,30 @@
 # Steering Wheel
-float32 steering_wheel_angle_cmd        # rad, range -8.2 to 8.2
-float32 steering_wheel_angle_velocity   # rad/s, range 0 to 8.7, 0 = maximum
+float32 steering_wheel_angle_cmd        # rad, range -9.6 to 9.6
+float32 steering_wheel_angle_velocity   # rad/s, range 0 to 17.5, 0 = default
+float32 steering_wheel_torque_cmd       # Nm, range -8.0 to 8.0
+uint8 cmd_type
 
 # Enable
 bool enable
 
+# Clear driver overrides
+bool clear
+
 # Ignore driver overrides
 bool ignore
 
-# Disable the driver override audible warning
+# Disable or activate the driver override audible warning
 bool quiet
+bool alert
 
 # Watchdog counter (optional)
 uint8 count
+
+# Command types
+uint8 CMD_ANGLE=0
+uint8 CMD_TORQUE=1
+
+# Maximum values
+float32 ANGLE_MAX=9.6     # rad, maximum angle
+float32 VELOCITY_MAX=17.5 # rad/s, maximum velocity
+float32 TORQUE_MAX=8.0    # Nm, maximum torque

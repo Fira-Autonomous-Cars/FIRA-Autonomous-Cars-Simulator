@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2017, Dataspeed Inc.
+ *  Copyright (c) 2015-2020, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -41,11 +41,12 @@ int main(int argc, char **argv)
   ros::NodeHandle nh;
   ros::NodeHandle nh_priv("~");
 
-  // create CanDriver class
+  // Create CanDriver class
   dataspeed_can_usb::CanDriver n(nh, nh_priv);
 
-  // handle callbacks until shut down
+  // Handle callbacks until shutdown
   ros::spin();
 
   return 0;
 }
+

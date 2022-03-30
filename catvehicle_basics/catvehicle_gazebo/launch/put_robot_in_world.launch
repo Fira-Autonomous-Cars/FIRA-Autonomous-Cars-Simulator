@@ -10,7 +10,7 @@
 
   <arg name="control_launch_file" default="$(find catvehicle)/launch/catvehicle_control.launch"/>
 
-  <param command="$(find xacro)/xacro.py '$(find catvehicle)/urdf/catvehicle_mod.xacro' roboname:='catvehicle'" name="robot_description" />
+  <param command="$(find xacro)/xacro '$(find catvehicle)/urdf/catvehicle_mod.xacro' roboname:='catvehicle'" name="robot_description" />
 
   <node args="-urdf -model catvehicle -param robot_description -x $(arg x) -y $(arg y) -z $(arg z) -R $(arg roll) -P $(arg pitch) -Y $(arg yaw)" name="urdf_spawner" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model" />
 

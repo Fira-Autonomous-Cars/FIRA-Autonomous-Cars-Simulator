@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2014-2017, Dataspeed Inc.
+ *  Copyright (c) 2014-2020, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -40,10 +40,12 @@ using namespace std;
 namespace lusb
 {
 
-static inline UsbDevice::Location locationFromLibUsbDevice(libusb_device *dev) {
+static inline UsbDevice::Location locationFromLibUsbDevice(libusb_device *dev, const libusb_device_descriptor desc) {
   return UsbDevice::Location(libusb_get_bus_number(dev),
                              libusb_get_port_number(dev),
-                             libusb_get_device_address(dev));
+                             libusb_get_device_address(dev),
+                             desc.idVendor,
+                             desc.idProduct);
 }
 
 bool UsbDevice::handleError(int err)
@@ -97,7 +99,11 @@ void UsbDevice::setDebugLevel(uint8_t level)
   if (level > LIBUSB_LOG_LEVEL_DEBUG) {
     level = LIBUSB_LOG_LEVEL_DEBUG;
   }
+#if LIBUSB_API_VERSION >= 0x01000107
+  libusb_set_option(ctx_, LIBUSB_OPTION_LOG_LEVEL, level);
+#else
   libusb_set_debug(ctx_, level);
+#endif
 }
 
 void UsbDevice::init()
@@ -110,7 +116,11 @@ void UsbDevice::init()
   memset(interrupt_threads_enable_, 0x00, sizeof(interrupt_threads_enable_));
   ctx_ = NULL;
   libusb_init(&ctx_);
+#if LIBUSB_API_VERSION >= 0x01000107
+  libusb_set_option(ctx_, LIBUSB_OPTION_LOG_LEVEL, LIBUSB_LOG_LEVEL_NONE);
+#else
   libusb_set_debug(ctx_, LIBUSB_LOG_LEVEL_NONE);
+#endif
 }
 
 UsbDevice::UsbDevice(uint16_t vid, uint16_t pid, uint8_t mi)
@@ -146,11 +156,21 @@ void UsbDevice::setDevceIds(uint16_t vid, uint16_t pid, uint8_t mi)
 
 void UsbDevice::listDevices(uint16_t vid, uint16_t pid, std::vector<Location> &vec)
 {
+  const std::vector<UsbIds> ids(1, UsbIds(vid, pid));
+  listDevices(ids, vec);
+}
+
+void UsbDevice::listDevices(const std::vector<UsbIds> &ids, std::vector<Location> &vec)
+{
   vec.clear();
 
   libusb_context *ctx = NULL;
   libusb_init(&ctx);
+#if LIBUSB_API_VERSION >= 0x01000107
+  libusb_set_option(ctx, LIBUSB_OPTION_LOG_LEVEL, LIBUSB_LOG_LEVEL_NONE);
+#else
   libusb_set_debug(ctx, LIBUSB_LOG_LEVEL_NONE);
+#endif
 
   libusb_device **list;
   ssize_t cnt = libusb_get_device_list(ctx, &list);
@@ -159,8 +179,11 @@ void UsbDevice::listDevices(uint16_t vid, uint16_t pid, std::vector<Location> &v
       libusb_device *device = list[i];
       struct libusb_device_descriptor desc;
       if (libusb_get_device_descriptor(device, &desc) == LIBUSB_SUCCESS) {
-        if ((!vid || vid == desc.idVendor) && (!pid || pid == desc.idProduct)) {
-          vec.push_back(locationFromLibUsbDevice(device));
+        for (size_t i = 0; i < ids.size(); i++) {
+          if ((!ids[i].vid || ids[i].vid == desc.idVendor) && (!ids[i].pid || ids[i].pid == desc.idProduct)) {
+            vec.push_back(locationFromLibUsbDevice(device, desc));
+            break;
+          }
         }
       }
     }
@@ -168,6 +191,11 @@ void UsbDevice::listDevices(uint16_t vid, uint16_t pid, std::vector<Location> &v
   libusb_free_device_list(list, 1);
 
   libusb_exit(ctx);
+}
+
+void UsbDevice::listDevices(std::vector<Location> &vec) const
+{
+  listDevices(vid_, pid_, vec);
 }
 
 bool UsbDevice::open(const Location &location)
@@ -183,7 +211,7 @@ bool UsbDevice::open(const Location &location)
       struct libusb_device_descriptor desc;
       if (libusb_get_device_descriptor(device, &desc) == LIBUSB_SUCCESS) {
         if ((!vid_ || vid_ == desc.idVendor) && (!pid_ || pid_ == desc.idProduct)) {
-          Location loc = locationFromLibUsbDevice(device);
+          Location loc = locationFromLibUsbDevice(device, desc);
           if (location.match(loc)) {
             libusb_device_handle *handle;
             if (libusb_open(device, &handle) == LIBUSB_SUCCESS) {
@@ -335,7 +363,7 @@ void UsbDevice::stopInterruptReadThread(unsigned char endpoint)
     interrupt_threads_[endpoint].join();
   }
 }
-void UsbDevice::startinterruptReadThread(Callback callback, unsigned char endpoint)
+void UsbDevice::startInterruptReadThread(Callback callback, unsigned char endpoint)
 {
   endpoint &= 0x7F;
   stopBulkReadThread(endpoint);

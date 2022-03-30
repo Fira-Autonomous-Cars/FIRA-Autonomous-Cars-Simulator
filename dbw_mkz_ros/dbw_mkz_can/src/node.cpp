@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2016, Dataspeed Inc.
+ *  Copyright (c) 2015-2019, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,7 @@
  *********************************************************************/
 
 #include <ros/ros.h>
-//#include "DbwNode.h"
-#include <dbw_mkz_can/DbwNode.h>
+#include "DbwNode.h"
 
 int main(int argc, char **argv)
 {
@@ -42,11 +41,12 @@ int main(int argc, char **argv)
   ros::NodeHandle node;
   ros::NodeHandle priv_nh("~");
 
-  // create DbwNode class
+  // Create DbwNode class
   dbw_mkz_can::DbwNode n(node, priv_nh);
 
-  // handle callbacks until shut down
+  // Handle callbacks until shutdown
   ros::spin();
 
   return 0;
 }
+

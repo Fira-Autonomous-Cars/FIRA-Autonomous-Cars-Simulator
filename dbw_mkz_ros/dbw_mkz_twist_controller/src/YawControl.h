@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2016, Dataspeed Inc.
+ *  Copyright (c) 2015-2018, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,38 +36,48 @@
 #define YAWCONTROL_H
 
 #include <math.h>
-#include "RadiusControl.h"
 
 namespace dbw_mkz_twist_controller {
 
 class YawControl {
 public:
-  YawControl() : radius_control_(), speed_min_(1.8), lateral_accel_max_(INFINITY) {}
-  YawControl(double wheelbase, double steering_ratio, double speed_min = 1.8, double steering_wheel_angle_max = INFINITY, double lateral_accel_max = INFINITY) :
-    radius_control_(wheelbase, steering_ratio, steering_wheel_angle_max), speed_min_(fabs(speed_min)), lateral_accel_max_(fabs(lateral_accel_max)) {}
-  void setWheelBase(double val) { radius_control_.setWheelBase(val); }
-  void setSteeringRatio(double val) { radius_control_.setSteeringRatio(val); }
-  void setSteeringWheelAngleMax(double val) { radius_control_.setSteeringWheelAngleMax(val); }
-  void setSpeedMin(double val) { speed_min_ = fabs(val); }
+  YawControl() : lateral_accel_max_(INFINITY), steering_wheel_angle_max_(8.2), steering_ratio_(1.0), wheelbase_(1.0) {}
+  YawControl(double wheelbase, double steering_ratio, double steering_wheel_angle_max = INFINITY, double lateral_accel_max = INFINITY) :
+    lateral_accel_max_(fabs(lateral_accel_max)), steering_wheel_angle_max_(steering_wheel_angle_max), steering_ratio_(steering_ratio), wheelbase_(wheelbase) {}
+  void setWheelBase(double val) { wheelbase_ = val; }
+  void setSteeringRatio(double val) { steering_ratio_ = val; }
   void setLateralAccelMax(double val) { lateral_accel_max_ = fabs(val); }
   double getSteeringWheelAngle(double cmd_vx, double cmd_wz, double speed) {
-    cmd_wz = fabs(cmd_vx) > 0 ? cmd_wz * speed / cmd_vx : 0.0;
-    if (fabs(speed) > 0.1) {
-      double max_yaw_rate = fabs(lateral_accel_max_ / speed);
-      if (cmd_wz > max_yaw_rate) {
-        cmd_wz = max_yaw_rate;
-      } else if (cmd_wz < -max_yaw_rate) {
-        cmd_wz = -max_yaw_rate;
+    double steering_wheel_angle;
+    if (fabsf(speed) > 0.5) { // When moving, use measured speed to compute steering angle to improve accuracy
+      steering_wheel_angle = steering_ratio_ * atan(wheelbase_ * cmd_wz / speed);
+    } else { // Use commanded speed to control radius at measured speeds below 0.5 m/s
+      if (fabsf(cmd_vx) > 0.1) {
+        steering_wheel_angle = steering_ratio_ * atan(wheelbase_ * cmd_wz / cmd_vx);
+      } else {
+        // Hits here if both measured speed and commanded speed are small;
+        // set steering to zero to avoid large changes in steering command
+        // due to dividing by small numbers.
+        steering_wheel_angle = 0;
       }
     }
-    return radius_control_.getSteeringWheelAngle(std::max(speed, speed_min_) / cmd_wz);
+
+    if (steering_wheel_angle > steering_wheel_angle_max_) {
+      steering_wheel_angle = steering_wheel_angle_max_;
+    } else if (steering_wheel_angle < -steering_wheel_angle_max_) {
+      steering_wheel_angle = -steering_wheel_angle_max_;
+    }
+
+    return steering_wheel_angle;
   }
 private:
-  RadiusControl radius_control_;
-  double speed_min_;
   double lateral_accel_max_;
+  double steering_wheel_angle_max_;
+  double steering_ratio_;
+  double wheelbase_;
 };
 
 }
 
 #endif // YAWCONTROL_H
+

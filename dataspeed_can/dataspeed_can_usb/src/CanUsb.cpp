@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2017, Dataspeed Inc.
+ *  Copyright (c) 2015-2020, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -95,27 +95,42 @@ CanUsb::~CanUsb()
   }
 }
 
-bool CanUsb::configure()
+bool CanUsb::configure(const std::string &mac)
 {
   if (readVersion()) {
     if (getNumChannels()) {
-      dev_->startBulkReadThread(boost::bind(&CanUsb::recvStream, this, _1, _2), STREAM_ENDPOINT);
-      ready_ = true;
-      return true;
+      if (mac.empty() || mac_addr_.match(mac)) {
+        dev_->startBulkReadThread(boost::bind(&CanUsb::recvStream, this, _1, _2), STREAM_ENDPOINT);
+        ready_ = true;
+        return true;
+      }
     }
   }
   return false;
 }
-bool CanUsb::open()
+bool CanUsb::open(const std::string &mac)
 {
   if (!isOpen()) {
     if (!dev_->isOpen()) {
-      if (dev_->open()) {
-        if (configure()) {
-          return true;
+      if (mac.empty()) {
+        if (dev_->open()) {
+          if (configure()) {
+            return true;
+          }
+        }
+        dev_->close();
+      } else {
+        std::vector<lusb::UsbDevice::Location> list;
+        dev_->listDevices(list);
+        for (size_t i = 0; i < list.size(); i++) {
+          if (dev_->open(list[i])) {
+            if (configure(mac)) {
+              return true;
+            }
+          }
+          dev_->close();
         }
       }
-      dev_->close();
     } else {
       if (configure()) {
         return true;
@@ -148,12 +163,13 @@ bool CanUsb::readVersion()
   packet.msg_id = USB_ID_VERSION;
   if (writeConfig(&packet, sizeof(packet.msg_id))) {
     int len = readConfig(&packet, sizeof(packet));
-    if ((len >= (int)sizeof(packet.version)) && (packet.msg_id == USB_ID_VERSION)) {
+    if ((len >= (int)sizeof(packet.version) - (int)sizeof(packet.version.mac_addr)) && (packet.msg_id == USB_ID_VERSION)) {
       version_major_ = packet.version.firmware.major;
       version_minor_ = packet.version.firmware.minor;
       version_build_ = packet.version.firmware.build;
       version_comms_ = packet.version.comms;
       serial_number_ = packet.version.serial_number;
+      mac_addr_ = (len >= (int)sizeof(packet.version)) ? MacAddr(packet.version.mac_addr) : MacAddr();
       return true;
     }
   }
@@ -178,7 +194,7 @@ void CanUsb::recvStream(const void *data, int size)
 {
   if (recv_callback_) {
     const MessageBuffer *ptr = ((StreamPacket*)data)->msg;
-    while (size >= sizeof(*ptr)) {
+    while (size >= (int)sizeof(*ptr)) {
         size -= sizeof(*ptr);
         recv_callback_(ptr->channel, ptr->id, ptr->extended, ptr->dlc, ptr->data);
         ptr++;
@@ -210,12 +226,13 @@ bool CanUsb::reset()
   return false;
 }
 
-bool CanUsb::setBitrate(unsigned int channel, uint32_t bitrate)
+bool CanUsb::setBitrate(unsigned int channel, uint32_t bitrate, uint8_t mode)
 {
   ConfigPacket packet;
   packet.msg_id = USB_ID_SET_BUS_CFG;
   packet.bus_cfg.channel = channel;
   packet.bus_cfg.bitrate = bitrate;
+  packet.bus_cfg.mode = mode;
   if (writeConfig(&packet, sizeof(packet.bus_cfg))) {
     int len = readConfig(&packet, sizeof(packet), USB_DEFAULT_TIMEOUT);
     if ((len >= (int)sizeof(packet.bus_cfg)) && (packet.msg_id == USB_ID_GET_BUS_CFG)) {
@@ -243,8 +260,10 @@ bool CanUsb::addFilter(unsigned int channel, uint32_t mask, uint32_t match)
   return false;
 }
 
-bool CanUsb::getStats(std::vector<unsigned int> &rx_drops, std::vector<unsigned int> &tx_drops, bool clear)
+bool CanUsb::getStats(std::vector<uint32_t> &rx_drops, std::vector<uint32_t> &tx_drops,
+                      std::vector<uint8_t> &rx_errors, std::vector<uint8_t> &tx_errors, bool)
 {
+  // TODO: implement clear functionality (last param)
   ConfigPacket packet;
   packet.msg_id = USB_ID_GET_STATS;
   if (writeConfig(&packet, sizeof(packet.bus_cfg))) {
@@ -253,9 +272,13 @@ bool CanUsb::getStats(std::vector<unsigned int> &rx_drops, std::vector<unsigned 
       unsigned int size = std::min(num_channels_, (unsigned int)MAX_CHANNELS);
       rx_drops.resize(size);
       tx_drops.resize(size);
+      rx_errors.resize(size);
+      tx_errors.resize(size);
       for (unsigned int i = 0; i < size; i++) {
         rx_drops[i] = packet.stats.rx_drops[i];
         tx_drops[i] = packet.stats.tx_drops[i];
+        rx_errors[i] = packet.stats.rx_errors[i];
+        tx_errors[i] = packet.stats.tx_errors[i];
       }
       return true;
     }
@@ -352,3 +375,4 @@ std::string CanUsb::version() const
 }
 
 } // namespace dataspeed_can_usb
+

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<package>
+<package format="2">
   <name>dbw_mkz_twist_controller</name>
-  <version>1.0.4</version>
+  <version>1.2.6</version>
   <description>
     Twist (speed and angular rate) controller for brake/throttle/steering
   </description>
@@ -17,12 +17,17 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <build_depend>roscpp</build_depend>
-  <build_depend>dbw_mkz_msgs</build_depend>
-  <build_depend>dynamic_reconfigure</build_depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>dbw_mkz_msgs</depend>
+  <depend>dynamic_reconfigure</depend>
 
-  <run_depend>roscpp</run_depend>
-  <run_depend>dbw_mkz_msgs</run_depend>
-  <run_depend>dynamic_reconfigure</run_depend>
+  <export>
+    <deprecated>
+      The package dbw_mkz_twist_controller has been deprecated with migration to dataspeed_ulc_can. The drive-by-wire firmware now includes a much better twist control implementation.
+    </deprecated>
+  </export>
 
 </package>

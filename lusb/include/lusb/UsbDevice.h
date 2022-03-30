@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2014-2017, Dataspeed Inc.
+ *  Copyright (c) 2014-2020, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -63,13 +63,21 @@ public:
   UsbDevice();
   ~UsbDevice();
 
+  struct UsbIds {
+    UsbIds() : vid(0), pid(0) {}
+    UsbIds(uint16_t _vid, uint16_t _pid) : vid(_vid), pid(_pid) {}
+    uint16_t vid, pid;
+  };
+
   class Location {
   public:
     Location() : loc(0) {}
-    Location(uint8_t _bus, uint8_t _port = 0, uint8_t _addr = 0) : loc(0) {
+    Location(uint8_t _bus, uint8_t _port = 0, uint8_t _addr = 0, uint16_t _vid = 0, uint16_t _pid = 0) : loc(0) {
       bus = _bus;
       addr = _addr;
       port = _port;
+      vid = _vid;
+      pid = _pid;
     }
     static bool match(const Location& a, const Location& b) {
       // Equal to each other or zero
@@ -107,8 +115,12 @@ public:
         uint8_t :8;
       };
     };
+    uint16_t vid; // Vendor Id
+    uint16_t pid; // Product Id
   };
+  static void listDevices(const std::vector<UsbIds> &ids, std::vector<Location> &list);
   static void listDevices(uint16_t vid, uint16_t pid, std::vector<Location> &list);
+  void listDevices(std::vector<Location> &list) const;
 
   void setDevceIds(uint16_t vid, uint16_t pid, uint8_t mi);
   bool open(const Location &location = Location());
@@ -125,7 +137,7 @@ public:
   typedef boost::function<void(const void *data, int size)> Callback;
   void startBulkReadThread(Callback callback, unsigned char endpoint);
   void stopBulkReadThread(unsigned char endpoint);
-  void startinterruptReadThread(Callback callback, unsigned char endpoint);
+  void startInterruptReadThread(Callback callback, unsigned char endpoint);
   void stopInterruptReadThread(unsigned char endpoint);
 
   bool throw_errors_;

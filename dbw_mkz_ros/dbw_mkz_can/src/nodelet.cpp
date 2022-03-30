@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2016, Dataspeed Inc.
+ *  Copyright (c) 2015-2019, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,7 @@
 #include <pluginlib/class_list_macros.h>
 #include <nodelet/nodelet.h>
 
-//#include "DbwNode.h"
-#include <dbw_mkz_can/DbwNode.h>
+#include "DbwNode.h"
 
 namespace dbw_mkz_can
 {
@@ -44,13 +43,6 @@ namespace dbw_mkz_can
 class DbwNodelet : public nodelet::Nodelet
 {
 public:
-  DbwNodelet()
-  {
-  }
-  ~DbwNodelet()
-  {
-  }
-
   void onInit(void)
   {
     node_.reset(new DbwNode(getNodeHandle(), getPrivateNodeHandle()));
@@ -64,5 +56,6 @@ private:
 
 // Register this plugin with pluginlib.  Names must match nodelets.xml.
 //
-// parameters: package, class name, class type, base class type
-PLUGINLIB_DECLARE_CLASS(dbw_mkz_can, DbwNodelet, dbw_mkz_can::DbwNodelet, nodelet::Nodelet);
+// parameters: class type, base class type
+PLUGINLIB_EXPORT_CLASS(dbw_mkz_can::DbwNodelet, nodelet::Nodelet);
+

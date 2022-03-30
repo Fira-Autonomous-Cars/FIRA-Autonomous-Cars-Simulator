@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>dataspeed_can_msg_filters</name>
-  <version>1.0.4</version>
+  <version>1.0.16</version>
   <description>
     Time synchronize multiple CAN messages to get a single callback
   </description>
@@ -16,6 +16,6 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>roscpp</depend>
-  <depend>dataspeed_can_msgs</depend>
+  <depend>can_msgs</depend>
 
 </package>

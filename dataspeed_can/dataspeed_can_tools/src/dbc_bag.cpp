@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2017, Dataspeed Inc.
+ *  Copyright (c) 2015-2020, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,54 +37,109 @@
 #include <rosbag/bag.h>
 #include <rosbag/view.h>
 #include <boost/foreach.hpp>
-#include <dataspeed_can_msgs/CanMessageStamped.h>
+#include <can_msgs/Frame.h>
 
 #include "CanExtractor.h"
 
+void printHelp() {
+  printf("Usage: dbc_bag <bag_file> <topic> <dbc_file> [dbc_files]... [-O output_file]\n");
+  printf("  [--unknown / -u] [--expand / -e]\n");
+  printf("  [--lz4] [--bz2]\n");
+  printf("  [--help / -h]\n");
+}
+
 int main(int argc, char** argv)
 {
-  if (argc < 3) {
-    printf("Usage: dbc_bag <dbc_file> <bag_file> [ns0] [ns1] [ns3]\n");
-    return 0;
+  // Arguments
+  std::string bag_file_in;
+  std::string bag_file_out;
+  std::string topic;
+  std::vector<std::string> dbc_files;
+  bool _expand = false;
+  bool _unknown = false;
+  bool _lz4 = false;
+  bool _bz2 = false;
+
+  // Parse command line arguments
+  unsigned int count = 0;
+  for (int i = 1; i < argc; i++) {
+    std::string str = argv[i];
+    if (str == "--help" || str == "-h") {
+      printHelp();
+      return 0;
+    } else if (str == "--unknown" || str == "-u") {
+      _unknown = true;
+    } else if (str == "--expand" || str == "-e") {
+      _expand = true;
+    } else if (str == "--lz4") {
+      _lz4 = true;
+    } else if (str == "--bz2") {
+      _bz2 = true;
+    } else if (str == "-O") {
+      i++;
+      if (i < argc) {
+        bag_file_out = argv[i];
+      }
+    } else {
+      if (count == 0) {
+        bag_file_in = str;
+      } else if (count == 1) {
+        topic = str;
+      } else {
+        dbc_files.push_back(str);
+      }
+      count++;
+    }
   }
-  std::string dbc_file = argv[1];
-  std::string bag_file_in = argv[2];
-  std::string bag_file_out = bag_file_in + ".dbc.bag";
-  std::vector<std::string> topics;
-  for (unsigned int i = 3; i < argc; i++) {
-    topics.push_back(std::string(argv[i]));
+  if (count < 3) {
+    printHelp();
+    return 1;
   }
-  if (topics.empty()) {
-    topics.push_back(std::string("/can_bus_dbw/can_rx"));
+  if (bag_file_out.empty()) {
+    bag_file_out = bag_file_in + ".dbc.bag";
   }
 
-  printf("Opening dbc file '%s'\n", dbc_file.c_str());
-  dataspeed_can_tools::CanExtractor extractor(dbc_file);
-
-  printf("Opening bag file for reading '%s'\n", bag_file_in.c_str());
+  printf("Opening input bag file: '%s'\n", bag_file_in.c_str());
   rosbag::Bag raw_bag;
   raw_bag.open(bag_file_in, rosbag::bagmode::Read);
-  rosbag::View view(raw_bag, rosbag::TopicQuery(topics));
 
-  printf("Opening bag file for writing '%s'\n", bag_file_out.c_str());
-  extractor.openBag(bag_file_out);
+  printf("Processing can_msgs/Frame on topic: '%s'\n", topic.c_str());
+  rosbag::View view(raw_bag, rosbag::TopicQuery(topic));
 
-  double total_time = (view.getEndTime() - view.getBeginTime()).toSec();
-  int last_percent = 0;
+  printf("Opening dbc files: \n");
+  for (size_t i = 0; i < dbc_files.size(); i++) {
+    printf("  - %s\n", dbc_files[i].c_str());
+  }
+  dataspeed_can_tools::CanExtractor extractor(dbc_files, true, _expand, _unknown);
 
-  BOOST_FOREACH(rosbag::MessageInstance const m, view) {
-    dataspeed_can_msgs::CanMessageStamped::ConstPtr msg = m.instantiate<dataspeed_can_msgs::CanMessageStamped>();
+  printf("Opening output bag file: '%s'\n", bag_file_out.c_str());
+  rosbag::compression::CompressionType compression = rosbag::compression::Uncompressed;
+  if (_lz4) {
+    compression = rosbag::compression::LZ4;
+  } else if (_bz2) {
+    compression = rosbag::compression::BZ2;
+  }
+  extractor.openBag(bag_file_out, compression);
 
-    double current_time = (msg->header.stamp - view.getBeginTime()).toSec();
-    if ((int)(100 * current_time / total_time) >= last_percent) {
-      printf("Processing: %d%% complete\n", last_percent);
-      last_percent += 10;
+  const ros::Time stamp_end = view.getEndTime();
+  const ros::Time stamp_begin = view.getBeginTime();
+  if (stamp_end > stamp_begin) {
+    int last_percent = 0;
+    BOOST_FOREACH(rosbag::MessageInstance const m, view) {
+      can_msgs::Frame::ConstPtr msg = m.instantiate<can_msgs::Frame>();
+      dataspeed_can_tools::RosCanMsgStruct can_msg;
+      can_msg.id = msg->id | (msg->is_extended ? 0x80000000 : 0x00000000);
+      extractor.getMessage(can_msg);
+      extractor.pubMessage(msg, m.getTime());
+
+      int percent = 100 * (msg->header.stamp - stamp_begin).toSec() / (stamp_end - stamp_begin).toSec();
+      if (percent >= last_percent) {
+        printf("Processing: %d%% complete\n", last_percent);
+        last_percent += 10;
+      }
     }
-
-    dataspeed_can_tools::RosCanMsgStruct can_msg;
-    can_msg.id = msg->msg.id;
-    extractor.getMessage(can_msg);
-    extractor.pubMessage(msg);
+  } else {
+    printf("Warning: no messages\n");
   }
 
   extractor.closeBag();
@@ -92,3 +147,4 @@ int main(int argc, char** argv)
 
   return 0;
 }
+

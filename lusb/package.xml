@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>lusb</name>
-  <version>1.0.8</version>
+  <version>1.1.0</version>
   <description>
     Library for interfacing to USB devices
   </description>
 
   <license>BSD</license>
-  <author>Dataspeed Inc.</author>
-  <maintainer email="khallenbeck@dataspeedinc.com">Dataspeed Inc.</maintainer>
+  <author>Kevin Hallenbeck</author>
+  <maintainer email="khallenbeck@dataspeedinc.com">Kevin Hallenbeck</maintainer>
   <url type="website">http://dataspeedinc.com</url>
   <url type="repository">https://bitbucket.org/dataspeedinc/lusb</url>
   <url type="bugtracker">https://bitbucket.org/dataspeedinc/lusb/issues</url>

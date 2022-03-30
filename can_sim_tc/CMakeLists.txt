@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   nodelet
   sensor_msgs
-  dataspeed_can_msgs
+  can_msgs
   dataspeed_can_msg_filters
   dbw_mkz_msgs
   dbw_mkz_can

@@ -5,7 +5,7 @@
 #include <ros/console.h>
 #include <dbw_mkz_can/DbwNode.h>
 #include <dbw_mkz_can/dispatch.h>
-#include <dataspeed_can_msgs/CanMessageStamped.h>
+#include <can_msgs/Frame.h>
 #include <geometry_msgs/Twist.h>
 #include <geometry_msgs/TwistStamped.h>
 #include <std_msgs/Float32.h>
@@ -59,7 +59,7 @@ private:
     ros::Subscriber sub_fix_;
     ros::Subscriber sub_fixvel_;
 
-    void recvCAN(const dataspeed_can_msgs::CanMessage::ConstPtr& msg);
+    void recvCAN(const can_msgs::Frame::ConstPtr& msg);
     void recvCmdVelSafe(const geometry_msgs::TwistStamped::ConstPtr& msg);
     void recvFixGps(const sensor_msgs::NavSatFix::ConstPtr& msg);
     void recvFixVelGps(const geometry_msgs::Vector3Stamped::ConstPtr& msg);

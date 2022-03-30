@@ -25,7 +25,7 @@
   </include>
 
   
-  <param command="$(find xacro)/xacro.py '$(find catvehicle)/urdf/catvehicle_mod.xacro' roboname:='catvehicle'" name="robot_description" />
+  <param command="$(find xacro)/xacro '$(find catvehicle)/urdf/catvehicle_mod.xacro' roboname:='catvehicle'" name="robot_description" />
   <node args="-urdf -model catvehicle -param robot_description -x -0.08 -y -0.09 -z 0.785" name="urdf_spawner" output="screen" pkg="gazebo_ros" respawn="false" type="spawn_model" />
 
 <!-- 

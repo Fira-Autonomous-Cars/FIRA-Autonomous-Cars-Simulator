@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2017, Dataspeed Inc.
+ *  Copyright (c) 2015-2020, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,6 +34,7 @@
 
 #include <dataspeed_can_usb/CanDriver.h>
 #include <dataspeed_can_usb/CanUsb.h>
+#include <std_msgs/String.h>
 
 namespace dataspeed_can_usb
 {
@@ -61,44 +62,61 @@ static bool getParamHex(const ros::NodeHandle &nh, const std::string& key, int& 
   return false;
 }
 
-CanDriver::CanDriver(ros::NodeHandle &nh, ros::NodeHandle &nh_priv, lusb::UsbDevice *dev, const std::string &name) : nh_(nh), name_(name)
+static uint8_t getModeFromString(const std::string &str) {
+  if (str == "normal") {
+    return 0;
+  } else if (str == "listen-only") {
+    return 1;
+  }
+  return 0; // Default to "normal"
+}
+
+CanDriver::CanDriver(ros::NodeHandle &nh, ros::NodeHandle &nh_priv, lusb::UsbDevice *dev, const std::string &name, const ModuleVersion &firmware) :
+    nh_(nh), nh_priv_(nh_priv), name_(name), total_drops_(0), firmware_(firmware)
 {
   dev_ = new CanUsb(dev);
   dev_->setRecvCallback(boost::bind(&CanDriver::recvDevice, this, _1, _2, _3, _4, _5));
 
   // Get Parameters
   sync_time_ = false;
+  error_topic_ = true;
+  std::string mode;
+  Channel channel;
 #if 0
   priv_nh.getParam("sync_time", sync_time_);
 #endif
-  int bitrate = 0;
-  nh_priv.getParam("bitrate", bitrate);
+  nh_priv.getParam("bitrate", channel.bitrate);
+  nh_priv.getParam("mode", mode);
+  nh_priv.getParam("error_topic", error_topic_);
+  nh_priv.getParam("mac_addr", mac_addr_);
 
-  bitrates_.resize(CanUsb::MAX_CHANNELS, bitrate);
-  filter_masks_.resize(CanUsb::MAX_CHANNELS);
-  filter_matches_.resize(CanUsb::MAX_CHANNELS);
+  channel.mode = getModeFromString(mode);
+  channels_.resize(CanUsb::MAX_CHANNELS, channel);
   for (unsigned int i = 0; i < CanUsb::MAX_CHANNELS; i++) {
-    std::stringstream ss;
-    ss << "bitrate_" << (i + 1);
-    nh_priv.getParam(ss.str(), bitrates_[i]);
+    std::string mode;
+    std::stringstream ss1, ss2;
+    ss1 << "bitrate_" << (i + 1);
+    ss2 << "mode_" << (i + 1);
+    nh_priv.getParam(ss1.str(), channels_[i].bitrate);
+    nh_priv.getParam(ss2.str(), mode);
+    channels_[i].mode = getModeFromString(mode);
     for (unsigned int j = 0; j < CanUsb::MAX_FILTERS; j++) {
       bool success = true;
-      int mask, match;
+      Filter filter;
       std::stringstream ss1, ss2;
       ss1 << "channel_" << (i + 1) << "_mask_" << j;
       ss2 << "channel_" << (i + 1) << "_match_" << j;
-      success &= getParamHex(nh_priv, ss1.str(), mask);
-      success &= getParamHex(nh_priv, ss2.str(), match);
+      success &= getParamHex(nh_priv, ss1.str(), (int&)filter.mask);
+      success &= getParamHex(nh_priv, ss2.str(), (int&)filter.match);
       if (success) {
-        filter_masks_[i].push_back((uint32_t)mask);
-        filter_matches_[i].push_back((uint32_t)match);
+        channels_[i].filters.push_back(filter);
       }
     }
   }
 
   serviceDevice();
 
-  // Set up Timers
+  // Setup Timers
   timer_service_ = nh.createWallTimer(ros::WallDuration(0.1), &CanDriver::timerServiceCallback, this);
   timer_flush_ = nh.createWallTimer(ros::WallDuration(0.001), &CanDriver::timerFlushCallback, this);
 }
@@ -114,22 +132,28 @@ CanDriver::~CanDriver()
   }
 }
 
-void CanDriver::recvRos(const dataspeed_can_msgs::CanMessage::ConstPtr& msg, unsigned int channel)
+void CanDriver::recvRos(const can_msgs::Frame::ConstPtr& msg, unsigned int channel)
 {
-  dev_->sendMessage(channel, msg->id, msg->extended, msg->dlc, msg->data.elems);
+  dev_->sendMessage(channel, msg->id, msg->is_extended, msg->dlc, msg->data.elems);
 }
 
 void CanDriver::recvDevice(unsigned int channel, uint32_t id, bool extended, uint8_t dlc, const uint8_t data[8])
 {
   boost::lock_guard<boost::mutex> lock(mutex_);
   if (channel < pubs_.size()) {
-    dataspeed_can_msgs::CanMessageStamped msg;
+    can_msgs::Frame msg;
     msg.header.stamp = ros::Time::now();
-    msg.msg.id = id;
-    msg.msg.extended = extended;
-    msg.msg.dlc = dlc;
-    memcpy(msg.msg.data.elems, data, 8);
-    pubs_[channel].publish(msg);
+    msg.id = id;
+    msg.is_rtr = false;
+    msg.is_extended = extended;
+    msg.is_error = (dlc == 0x0F);
+    msg.dlc = dlc;
+    memcpy(msg.data.elems, data, 8);
+    if (msg.is_error && (channel < pubs_err_.size())) {
+      pubs_err_[channel].publish(msg);
+    } else {
+      pubs_[channel].publish(msg);
+    }
   }
 }
 
@@ -154,11 +178,25 @@ void CanDriver::serviceDevice()
 {
   if (!dev_->isOpen()) {
     boost::lock_guard<boost::mutex> lock(mutex_);
+    pubs_err_.clear();
     pubs_.clear();
     subs_.clear();
-    if (dev_->open()) {
+    pub_version_.shutdown();
+    if (dev_->open(mac_addr_)) {
       if (dev_->reset()) {
+        const ModuleVersion version(dev_->versionMajor(), dev_->versionMinor(), dev_->versionBuild());
         ROS_INFO("%s: version %s", name_.c_str(), dev_->version().c_str());
+        std_msgs::String version_msg;
+        pub_version_ = nh_priv_.advertise<std_msgs::String>("version", 1, true);
+        version_msg.data = dev_->version().c_str();
+        pub_version_.publish(version_msg);
+        ROS_INFO("%s: MAC address %s", name_.c_str(), dev_->macAddr().toString().c_str());
+        if (firmware_.valid() && version < firmware_) {
+          ROS_WARN("Detected old %s firmware version %u.%u.%u, updating to %u.%u.%u is suggested. Execute `%s` to update.", name_.c_str(),
+                   version.major(), version.minor(), version.build(),
+                   firmware_.major(), firmware_.minor(), firmware_.build(),
+                   "rosrun dataspeed_can_usb fw_update.bash");
+        }
         bool synced = false;
         if (sync_time_) {
           ROS_INFO("%s: Synchronizing time...", name_.c_str());
@@ -172,17 +210,20 @@ void CanDriver::serviceDevice()
         if (!sync_time_ || synced) {
           bool success = true;
           for (unsigned int i = 0; i < dev_->numChannels(); i++) {
-            for (unsigned int j = 0; j < std::min(filter_masks_[i].size(), filter_matches_[i].size()); j++) {
-              if (dev_->addFilter(i, filter_masks_[i][j], filter_matches_[i][j])) {
-                ROS_INFO("%s: Ch%u, Mask: 0x%08X, Match: 0x%08X", name_.c_str(), i + 1, filter_masks_[i][j], filter_matches_[i][j]);
+            for (unsigned int j = 0; j < channels_[i].filters.size(); j++) {
+              const uint32_t mask = channels_[i].filters[j].mask;
+              const uint32_t match = channels_[i].filters[j].match;
+              if (dev_->addFilter(i, mask, match)) {
+                ROS_INFO("%s: Ch%u, Mask: 0x%08X, Match: 0x%08X", name_.c_str(), i + 1, mask, match);
               } else {
-                ROS_WARN("%s: Ch%u, Mask: 0x%08X, Match: 0x%08X failed", name_.c_str(), i + 1, filter_masks_[i][j], filter_matches_[i][j]);
+                ROS_WARN("%s: Ch%u, Mask: 0x%08X, Match: 0x%08X failed", name_.c_str(), i + 1, mask, match);
               }
             }
           }
           for (unsigned int i = 0; i < dev_->numChannels(); i++) {
-            int bitrate = i < bitrates_.size() ? bitrates_[i] : 0;
-            if (dev_->setBitrate(i, bitrate)) {
+            const int bitrate = i < channels_.size() ? channels_[i].bitrate : 0;
+            const uint8_t mode = i < channels_.size() ? channels_[i].mode : 0;
+            if (dev_->setBitrate(i, bitrate, mode)) {
               ROS_INFO("%s: Ch%u %ukbps", name_.c_str(), i + 1, bitrate / 1000);
             } else {
               ROS_WARN("%s: Ch%u %ukbps failed", name_.c_str(), i + 1, bitrate / 1000);
@@ -190,25 +231,29 @@ void CanDriver::serviceDevice()
             }
           }
           if (success) {
-            // Set up Publishers and Subscribers
+            // Setup Publishers and Subscribers
             for (unsigned int i = 0; i < dev_->numChannels(); i++) {
-              if (i < bitrates_.size() && bitrates_[i]) {
+              if (i < channels_.size() && channels_[i].bitrate) {
                 std::stringstream ns;
                 ns << "can_bus_" << (i + 1);
                 ros::NodeHandle node(nh_, ns.str());
-                subs_.push_back(node.subscribe<dataspeed_can_msgs::CanMessage>("can_tx", 100, boost::bind(&CanDriver::recvRos, this, _1, i)));
-                pubs_.push_back(node.advertise<dataspeed_can_msgs::CanMessageStamped>("can_rx", 100, false));
+                if (channels_[i].mode) {
+                  subs_.push_back(ros::Subscriber()); // Listen-only mode cannot transmit
+                } else {
+                  subs_.push_back(node.subscribe<can_msgs::Frame>("can_tx", 100, boost::bind(&CanDriver::recvRos, this, _1, i), ros::VoidConstPtr(), ros::TransportHints().tcpNoDelay()));
+                }
+                pubs_.push_back(node.advertise<can_msgs::Frame>("can_rx", 100, false));
+                if (error_topic_) {
+                  pubs_err_.push_back(node.advertise<can_msgs::Frame>("can_err", 100, false));
+                }
               } else {
                 subs_.push_back(ros::Subscriber());
                 pubs_.push_back(ros::Publisher());
+                if (error_topic_) {
+                  pubs_err_.push_back(ros::Publisher());
+                }
               }
             }
-#if 0
-            unsigned char asdf[] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
-            for (unsigned int i = 0; i < 0x100 + 1; i++) {
-              dev_->sendMessage(0, 0x100 + i, false, 8, asdf);
-            }
-#endif
           } else {
             dev_->reset();
             dev_->closeDevice();
@@ -223,18 +268,24 @@ void CanDriver::serviceDevice()
         ROS_WARN("%s: Failed to reset", name_.c_str());
       }
     } else {
-      ROS_WARN_THROTTLE(10.0, "%s: not found", name_.c_str());
+      if (mac_addr_.empty()) {
+        ROS_WARN_THROTTLE(10.0, "%s: Not found", name_.c_str());
+      } else {
+        ROS_WARN_THROTTLE(10.0, "%s: MAC address '%s' not found", name_.c_str(), mac_addr_.c_str());
+      }
     }
   } else {
     std::vector<uint32_t> rx_drops, tx_drops;
-    if (dev_->getStats(rx_drops, tx_drops, true)) {
+    std::vector<uint8_t> rx_errors, tx_errors;
+    if (dev_->getStats(rx_drops, tx_drops, rx_errors, tx_errors, true)) {
       unsigned int size = std::min(rx_drops.size(), tx_drops.size());
       uint32_t total = 0;
       for (unsigned int i = 0; i < size; i++) {
         total += rx_drops[i];
         total += tx_drops[i];
       }
-      if (total) {
+      if (total != total_drops_) {
+        total_drops_ = total;
         std::stringstream ss;
         for (unsigned int i = 0; i < size; i++) {
           ss << "Rx" << (i + 1) << ": " << rx_drops[i] << ", ";
@@ -246,14 +297,15 @@ void CanDriver::serviceDevice()
   }
 }
 
-void CanDriver::timerServiceCallback(const ros::WallTimerEvent& event)
+void CanDriver::timerServiceCallback(const ros::WallTimerEvent&)
 {
   serviceDevice();
 }
 
-void CanDriver::timerFlushCallback(const ros::WallTimerEvent& event)
+void CanDriver::timerFlushCallback(const ros::WallTimerEvent&)
 {
   dev_->flushMessages();
 }
 
 } // namespace dataspeed_can_usb
+

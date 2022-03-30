@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2016, Dataspeed Inc.
+ *  Copyright (c) 2015-2018, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -36,10 +36,13 @@
 
 namespace dbw_mkz_twist_controller {
 
-TwistControllerNode::TwistControllerNode(ros::NodeHandle n, ros::NodeHandle pn)
+TwistControllerNode::TwistControllerNode(ros::NodeHandle &n, ros::NodeHandle &pn) : srv_(pn)
 {
   lpf_fuel_.setParams(60.0, 0.1);
   accel_pid_.setRange(0.0, 1.0);
+
+  // Dynamic reconfigure
+  srv_.setCallback(boost::bind(&TwistControllerNode::reconfig, this, _1, _2));
 
   // Control rate parameter
   double control_rate;
@@ -47,15 +50,14 @@ TwistControllerNode::TwistControllerNode(ros::NodeHandle n, ros::NodeHandle pn)
   control_period_ = 1.0 / control_rate;
 
   // Ackermann steering parameters
-  acker_wheelbase_ = 2.8498;
-  acker_track_ = 1.6002;
-  steering_ratio_ = 16.0;
+  acker_wheelbase_ = 2.8498; // 112.2 inches
+  acker_track_ = 1.5824; // 62.3 inches
+  steering_ratio_ = 14.8;
   pn.getParam("ackermann_wheelbase", acker_wheelbase_);
   pn.getParam("ackermann_track", acker_track_);
   pn.getParam("steering_ratio", steering_ratio_);
   yaw_control_.setWheelBase(acker_wheelbase_);
   yaw_control_.setSteeringRatio(steering_ratio_);
-  yaw_control_.setSpeedMin(mphToMps(4.0));
 
   // Subscribers
   sub_twist_ = n.subscribe("cmd_vel", 1, &TwistControllerNode::recvTwist, this);
@@ -77,9 +79,6 @@ TwistControllerNode::TwistControllerNode(ros::NodeHandle n, ros::NodeHandle pn)
 
   // Timers
   control_timer_ = n.createTimer(ros::Duration(control_period_), &TwistControllerNode::controlCallback, this);
-
-  // Dynamic reconfigure
-  srv_.setCallback(boost::bind(&TwistControllerNode::reconfig, this, _1, _2));
 }
 
 void TwistControllerNode::controlCallback(const ros::TimerEvent& event)
@@ -104,13 +103,9 @@ void TwistControllerNode::controlCallback(const ros::TimerEvent& event)
   );
   double accel_cmd = speed_pid_.step(vel_error, control_period_);
 
-  const double MIN_SPEED = mphToMps(5.0);
   if (cmd_vel_.twist.linear.x <= (double)1e-2) {
     accel_cmd = std::min(accel_cmd, -530 / vehicle_mass / cfg_.wheel_radius);
-  } else if (cmd_vel_.twist.linear.x < MIN_SPEED) {
-    cmd_vel_.twist.angular.z *= MIN_SPEED / cmd_vel_.twist.linear.x;
-    cmd_vel_.twist.linear.x = MIN_SPEED;
-  }
+  } 
 
   std_msgs::Float64 accel_cmd_msg;
   accel_cmd_msg.data = accel_cmd;
@@ -132,7 +127,7 @@ void TwistControllerNode::controlCallback(const ros::TimerEvent& event)
 
     brake_cmd.enable = true;
     brake_cmd.pedal_cmd_type = dbw_mkz_msgs::BrakeCmd::CMD_TORQUE;
-    if ((accel_cmd < -cfg_.brake_deadband) || (cmd_vel_.twist.linear.x < MIN_SPEED)) {
+    if (accel_cmd < -cfg_.brake_deadband) {
       brake_cmd.pedal_cmd = -accel_cmd * vehicle_mass * cfg_.wheel_radius;
     } else {
       brake_cmd.pedal_cmd = 0;
@@ -218,3 +213,4 @@ void TwistControllerNode::recvEnable(const std_msgs::Bool::ConstPtr& msg)
 }
 
 }
+

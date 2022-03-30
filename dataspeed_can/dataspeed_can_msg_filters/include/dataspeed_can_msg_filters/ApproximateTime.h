@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2017, Dataspeed Inc.
+ *  Copyright (c) 2015-2020, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -37,15 +37,62 @@
 
 #include <deque>
 #include <ros/ros.h>
-#include <dataspeed_can_msgs/CanMessageStamped.h>
+#include <can_msgs/Frame.h>
 
 namespace dataspeed_can_msg_filters
 {
+/*
+ * Synchronize several messages that don't have exact matching timestamps
+ *
+ * From the wiki (https://wiki.ros.org/message_filters/ApproximateTime):
+ * This is a policy used by message_filters::sync::Synchronizer to match messages coming on a set of topics.
+ * Contrary to message_filters::sync::ExactTime, it can match messages even if they have different time stamps.
+ * We call size of a set of messages the difference between the latest and earliest time stamp in the set.
+ *
+ * The algorithm is the product of long discussions with Blaise. It does not work like ExactTime except with
+ * matching allowed up to some epsilon time difference. Instead it finds the best match. It satisfies these properties:
+ *  -  The algorithm is parameter free. No need to specify an epsilon. Some parameters can be provided (see below),
+ *      but they are optional.
+ *  -  Messages are used only once. Two sets cannot share the same message. Some messages can be dropped.
+ *  -  Sets do not cross. For two sets S and T, their messages satisfy either Si <= Ti for all i, or Ti <= Si for all i,
+ *      where i runs over topics.
+ *  -  Sets are contiguous. There is at least one topic where there is no dropped message between the two sets.
+ *      In other words there is no room to form another set with the dropped messages.
+ *  -  Sets are of minimal size among the sets contiguous to the previous published set.
+ *  -  The output only depends on the time stamps, not on the arrival time of messages. It does assume that messages arrive
+ *      in order on each topic, but not even necessarily across topics (though the queue size must be large enough if there are
+ *      big differences or messages will be dropped). This means that ApproximateTime can be safely used on messages that have
+ *      suffered arbitrary networking or processing delays.
+ */
 class ApproximateTime
 {
 public:
-  typedef dataspeed_can_msgs::CanMessageStamped::ConstPtr Type;
+  typedef can_msgs::Frame::ConstPtr Type;
   typedef boost::function<void(const std::vector<Type> &vec)> Callback;
+
+  static bool ValidId(uint32_t id)
+  {
+    if (id & 0x80000000) {
+      if (!(id & ~0x9FFFFFFF)) {
+        return true; // Extended ID
+      }
+    } else {
+      if (!(id & ~0x7FF)) {
+        return true; // Standard ID
+      }
+    }
+    return false;
+  }
+  static bool ValidId(uint32_t id, bool extended)
+  {
+    return extended ? !(id & ~0x1FFFFFFF) : !(id & ~0x7FF);
+  }
+  static bool ValidId(const Type &msg) { return ValidId(msg->id, msg->is_extended); }
+  static uint32_t BuildId(uint32_t id, bool extended)
+  {
+    return extended ? ((id & 0x1FFFFFFF) | 0x80000000) : (id & 0x7FF);
+  }
+  static uint32_t BuildId(const Type &msg) { return BuildId(msg->id, msg->is_extended); }
 
   ApproximateTime(uint32_t queue_size, Callback callback, uint32_t id1, uint32_t id2)
 : queue_size_(queue_size)
@@ -56,13 +103,15 @@ public:
 , age_penalty_(0.1)
   {
     ROS_ASSERT(queue_size_ > 0);  // The synchronizer will tend to drop many messages with a queue size of 1. At least 2 is recommended.
+    ROS_ASSERT(ValidId(id1));
+    ROS_ASSERT(ValidId(id2));
 
-    std::vector<unsigned int> ids(2);
+    std::vector<uint32_t> ids(2);
     ids[0] = id1;
     ids[1] = id2;
 
     vector_.resize(ids.size());
-    for (unsigned int i = 0; i < ids.size(); i++) {
+    for (size_t i = 0; i < ids.size(); i++) {
       vector_[i].id = ids[i];
       vector_[i].has_dropped_messages = false;
       vector_[i].inter_message_lower_bounds = ros::Duration(0);
@@ -78,14 +127,17 @@ public:
 , age_penalty_(0.1)
   {
     ROS_ASSERT(queue_size_ > 0);  // The synchronizer will tend to drop many messages with a queue size of 1. At least 2 is recommended.
+    ROS_ASSERT(ValidId(id1));
+    ROS_ASSERT(ValidId(id2));
+    ROS_ASSERT(ValidId(id3));
 
-    std::vector<unsigned int> ids(3);
+    std::vector<uint32_t> ids(3);
     ids[0] = id1;
     ids[1] = id2;
     ids[2] = id3;
 
     vector_.resize(ids.size());
-    for (unsigned int i = 0; i < ids.size(); i++) {
+    for (size_t i = 0; i < ids.size(); i++) {
       vector_[i].id = ids[i];
       vector_[i].has_dropped_messages = false;
       vector_[i].inter_message_lower_bounds = ros::Duration(0);
@@ -101,15 +153,19 @@ public:
 , age_penalty_(0.1)
   {
     ROS_ASSERT(queue_size_ > 0);  // The synchronizer will tend to drop many messages with a queue size of 1. At least 2 is recommended.
+    ROS_ASSERT(ValidId(id1));
+    ROS_ASSERT(ValidId(id2));
+    ROS_ASSERT(ValidId(id3));
+    ROS_ASSERT(ValidId(id4));
 
-    std::vector<unsigned int> ids(4);
+    std::vector<uint32_t> ids(4);
     ids[0] = id1;
     ids[1] = id2;
     ids[2] = id3;
     ids[3] = id4;
 
     vector_.resize(ids.size());
-    for (unsigned int i = 0; i < ids.size(); i++) {
+    for (size_t i = 0; i < ids.size(); i++) {
       vector_[i].id = ids[i];
       vector_[i].has_dropped_messages = false;
       vector_[i].inter_message_lower_bounds = ros::Duration(0);
@@ -125,8 +181,13 @@ public:
 , age_penalty_(0.1)
   {
     ROS_ASSERT(queue_size_ > 0);  // The synchronizer will tend to drop many messages with a queue size of 1. At least 2 is recommended.
+    ROS_ASSERT(ValidId(id1));
+    ROS_ASSERT(ValidId(id2));
+    ROS_ASSERT(ValidId(id3));
+    ROS_ASSERT(ValidId(id4));
+    ROS_ASSERT(ValidId(id5));
 
-    std::vector<unsigned int> ids(5);
+    std::vector<uint32_t> ids(5);
     ids[0] = id1;
     ids[1] = id2;
     ids[2] = id3;
@@ -134,7 +195,7 @@ public:
     ids[4] = id5;
 
     vector_.resize(ids.size());
-    for (unsigned int i = 0; i < ids.size(); i++) {
+    for (size_t i = 0; i < ids.size(); i++) {
       vector_[i].id = ids[i];
       vector_[i].has_dropped_messages = false;
       vector_[i].inter_message_lower_bounds = ros::Duration(0);
@@ -150,8 +211,14 @@ public:
 , age_penalty_(0.1)
   {
     ROS_ASSERT(queue_size_ > 0);  // The synchronizer will tend to drop many messages with a queue size of 1. At least 2 is recommended.
+    ROS_ASSERT(ValidId(id1));
+    ROS_ASSERT(ValidId(id2));
+    ROS_ASSERT(ValidId(id3));
+    ROS_ASSERT(ValidId(id4));
+    ROS_ASSERT(ValidId(id5));
+    ROS_ASSERT(ValidId(id6));
 
-    std::vector<unsigned int> ids(6);
+    std::vector<uint32_t> ids(6);
     ids[0] = id1;
     ids[1] = id2;
     ids[2] = id3;
@@ -160,7 +227,7 @@ public:
     ids[5] = id6;
 
     vector_.resize(ids.size());
-    for (unsigned int i = 0; i < ids.size(); i++) {
+    for (size_t i = 0; i < ids.size(); i++) {
       vector_[i].id = ids[i];
       vector_[i].has_dropped_messages = false;
       vector_[i].inter_message_lower_bounds = ros::Duration(0);
@@ -176,8 +243,15 @@ public:
 , age_penalty_(0.1)
   {
     ROS_ASSERT(queue_size_ > 0);  // The synchronizer will tend to drop many messages with a queue size of 1. At least 2 is recommended.
+    ROS_ASSERT(ValidId(id1));
+    ROS_ASSERT(ValidId(id2));
+    ROS_ASSERT(ValidId(id3));
+    ROS_ASSERT(ValidId(id4));
+    ROS_ASSERT(ValidId(id5));
+    ROS_ASSERT(ValidId(id6));
+    ROS_ASSERT(ValidId(id7));
 
-    std::vector<unsigned int> ids(7);
+    std::vector<uint32_t> ids(7);
     ids[0] = id1;
     ids[1] = id2;
     ids[2] = id3;
@@ -187,7 +261,7 @@ public:
     ids[6] = id7;
 
     vector_.resize(ids.size());
-    for (unsigned int i = 0; i < ids.size(); i++) {
+    for (size_t i = 0; i < ids.size(); i++) {
       vector_[i].id = ids[i];
       vector_[i].has_dropped_messages = false;
       vector_[i].inter_message_lower_bounds = ros::Duration(0);
@@ -203,8 +277,16 @@ public:
 , age_penalty_(0.1)
   {
     ROS_ASSERT(queue_size_ > 0);  // The synchronizer will tend to drop many messages with a queue size of 1. At least 2 is recommended.
+    ROS_ASSERT(ValidId(id1));
+    ROS_ASSERT(ValidId(id2));
+    ROS_ASSERT(ValidId(id3));
+    ROS_ASSERT(ValidId(id4));
+    ROS_ASSERT(ValidId(id5));
+    ROS_ASSERT(ValidId(id6));
+    ROS_ASSERT(ValidId(id7));
+    ROS_ASSERT(ValidId(id8));
 
-    std::vector<unsigned int> ids(8);
+    std::vector<uint32_t> ids(8);
     ids[0] = id1;
     ids[1] = id2;
     ids[2] = id3;
@@ -215,7 +297,7 @@ public:
     ids[7] = id8;
 
     vector_.resize(ids.size());
-    for (unsigned int i = 0; i < ids.size(); i++) {
+    for (size_t i = 0; i < ids.size(); i++) {
       vector_[i].id = ids[i];
       vector_[i].has_dropped_messages = false;
       vector_[i].inter_message_lower_bounds = ros::Duration(0);
@@ -231,8 +313,17 @@ public:
 , age_penalty_(0.1)
   {
     ROS_ASSERT(queue_size_ > 0);  // The synchronizer will tend to drop many messages with a queue size of 1. At least 2 is recommended.
+    ROS_ASSERT(ValidId(id1));
+    ROS_ASSERT(ValidId(id2));
+    ROS_ASSERT(ValidId(id3));
+    ROS_ASSERT(ValidId(id4));
+    ROS_ASSERT(ValidId(id5));
+    ROS_ASSERT(ValidId(id6));
+    ROS_ASSERT(ValidId(id7));
+    ROS_ASSERT(ValidId(id8));
+    ROS_ASSERT(ValidId(id9));
 
-    std::vector<unsigned int> ids(9);
+    std::vector<uint32_t> ids(9);
     ids[0] = id1;
     ids[1] = id2;
     ids[2] = id3;
@@ -244,7 +335,7 @@ public:
     ids[8] = id9;
 
     vector_.resize(ids.size());
-    for (unsigned int i = 0; i < ids.size(); i++) {
+    for (size_t i = 0; i < ids.size(); i++) {
       vector_[i].id = ids[i];
       vector_[i].has_dropped_messages = false;
       vector_[i].inter_message_lower_bounds = ros::Duration(0);
@@ -255,10 +346,12 @@ public:
 
   void processMsg(const Type &msg)
   {
-    for (unsigned int i = 0; i < vector_.size(); i++) {
-      if (msg->msg.id == vector_[i].id) {
+    if (msg->is_rtr || msg->is_error) return;
+    ROS_WARN_COND(!ValidId(msg), "Processed CAN message with invalid id: 0x%X (%s)", msg->id, msg->is_extended ? "extended" : "standard");
+    for (size_t i = 0; i < vector_.size(); i++) {
+      if (BuildId(msg) == vector_[i].id) {
 #if 0
-        ROS_INFO("Id 0x%X: %u.%u", msg->msg.id, msg->header.stamp.sec, msg->header.stamp.nsec);
+        ROS_INFO("Id 0x%X: %u.%u", BuildId(msg), msg->header.stamp.sec, msg->header.stamp.nsec);
 #endif
         std::deque<Type>& deque = vector_[i].deque;
         deque.push_back(msg);
@@ -279,7 +372,7 @@ public:
         if (deque.size() + past.size() > queue_size_) {
           // Cancel ongoing candidate search, if any:
           num_non_empty_deques_ = 0; // We will recompute it from scratch
-          {for (unsigned int i = 0; i < vector_.size(); i++) {
+          {for (size_t i = 0; i < vector_.size(); i++) {
             recover(i);
           }}
           // Drop the oldest message in the offending topic
@@ -288,7 +381,7 @@ public:
           vector_[i].has_dropped_messages = true;
           if (pivot_ != NO_PIVOT) {
             // The candidate is no longer valid. Destroy it.
-            for (unsigned int i = 0; i < vector_.size(); i++) {
+            for (size_t i = 0; i < vector_.size(); i++) {
               vector_[i].candidate.reset();
             }
             pivot_ = NO_PIVOT;
@@ -301,20 +394,45 @@ public:
     }
   }
 
-
+  /*
+   * Set the Age penalty: when comparing the size of sets, later intervals are penalized by a factor (1+AgePenalty).
+   * The default is 0. A non zero penalty can help output sets earlier, or output more sets, at some cost in quality.
+   */
   void setAgePenalty(double age_penalty) {
     // For correctness we only need age_penalty > -1.0, but most likely a negative age_penalty is a mistake.
     ROS_ASSERT(age_penalty >= 0);
     age_penalty_ = age_penalty;
   }
 
-  void setInterMessageLowerBound(unsigned int i, ros::Duration lower_bound) {
+  /*
+   * Set the Inter message lower bound: if messages of a particular topic cannot be closer together than a known interval,
+   * providing this lower bound will not change the output but will allow the algorithm to conclude earlier that a given
+   * set is optimal, reducing delays. With the default value of 0, for messages spaced on average by a duration T,
+   * the algorithm can introduce a delay of about T. With good bounds provided a set can often be published as soon as
+   * the last message of the set is received. An incorrect bound will result in suboptimal sets being selected. A typical
+   * bound is, say, 1/2 the frame rate of a camera.
+   */
+  void setInterMessageLowerBound(ros::Duration lower_bound) {
+    ROS_ASSERT(lower_bound >= ros::Duration(0,0));
+    for (size_t i = 0; i < vector_.size(); i++) {
+      vector_[i].inter_message_lower_bounds = lower_bound;
+    }
+  }
+
+  /*
+   * Set the Inter message lower bound for each individual message index
+   */
+  void setInterMessageLowerBound(size_t i, ros::Duration lower_bound) {
     // For correctness we only need age_penalty > -1.0, but most likely a negative age_penalty is a mistake.
     ROS_ASSERT(lower_bound >= ros::Duration(0,0));
-    ROS_ASSERT((size_t)i < vector_.size());
+    ROS_ASSERT(i < vector_.size());
     vector_[i].inter_message_lower_bounds = lower_bound;
   }
 
+  /*
+   * Set the Max interval duration: sets of more than this size will not be considered (disabled by default). The effect
+   * is similar to throwing away a posteriori output sets that are too large, but it can be a little better.
+   */
   void setMaxIntervalDuration(ros::Duration max_interval_duration) {
     // For correctness we only need age_penalty > -1.0, but most likely a negative age_penalty is a mistake.
     ROS_ASSERT(max_interval_duration >= ros::Duration(0,0));
@@ -323,7 +441,7 @@ public:
 
 
 private:
-  void checkInterMessageBound(unsigned int i)
+  void checkInterMessageBound(size_t i)
   {
     namespace mt = ros::message_traits;
     if (vector_[i].warned_about_incorrect_bound) {
@@ -334,7 +452,7 @@ private:
     ROS_ASSERT(!deque.empty());
     ros::Time msg_time = deque.back()->header.stamp;
     ros::Time previous_msg_time;
-    if (deque.size() == (size_t) 1) {
+    if (deque.size() == (size_t)1) {
       if (v.empty()) {
         // We have already published (or have never received) the previous message, we cannot check the bound
         return;
@@ -356,7 +474,7 @@ private:
   }
 
   // Assumes that deque number <index> is non empty
-  void dequeDeleteFront(unsigned int i)
+  void dequeDeleteFront(size_t i)
   {
     std::deque<Type>& deque = vector_[i].deque;
     ROS_ASSERT(!deque.empty());
@@ -367,7 +485,7 @@ private:
   }
 
   // Assumes that deque number <index> is non empty
-  void dequeMoveFrontToPast(unsigned int i)
+  void dequeMoveFrontToPast(size_t i)
   {
     std::deque<Type>& deque = vector_[i].deque;
     std::vector<Type>& vector = vector_[i].past;
@@ -382,14 +500,14 @@ private:
   void makeCandidate()
   {
     //printf("Creating candidate\n");
-    for (unsigned int i = 0; i < vector_.size(); i++) {
+    for (size_t i = 0; i < vector_.size(); i++) {
       vector_[i].candidate = vector_[i].deque.front(); // Create candidate tuple
       vector_[i].past.clear(); // Delete all past messages, since we have found a better candidate
     }
     //printf("Candidate created\n");
   }
 
-   void recover(unsigned int i, size_t num_messages)
+   void recover(size_t i, size_t num_messages)
    {
      std::vector<Type>& v = vector_[i].past;
      std::deque<Type>& q = vector_[i].deque;
@@ -406,7 +524,7 @@ private:
    }
 
 
-   void recover(unsigned int i)
+   void recover(size_t i)
    {
      std::vector<Type>& v = vector_[i].past;
      std::deque<Type>& q = vector_[i].deque;
@@ -420,7 +538,7 @@ private:
      }
    }
 
-   void recoverAndDelete(unsigned int i)
+   void recoverAndDelete(size_t i)
    {
      std::vector<Type>& v = vector_[i].past;
      std::deque<Type>& q = vector_[i].deque;
@@ -443,20 +561,20 @@ private:
      //printf("Publishing candidate\n");
      // Publish
      std::vector<Type> candidate;
-     for (unsigned int i = 0; i < vector_.size(); i++) {
+     for (size_t i = 0; i < vector_.size(); i++) {
        candidate.push_back(vector_[i].candidate);
      }
      callback_(candidate);
 
      // Delete this candidate
-     for (unsigned int i = 0; i < vector_.size(); i++) {
+     for (size_t i = 0; i < vector_.size(); i++) {
        vector_[i].candidate.reset();
      }
      pivot_ = NO_PIVOT;
 
      // Recover hidden messages, and delete the ones corresponding to the candidate
      num_non_empty_deques_ = 0; // We will recompute it from scratch
-     for (unsigned int i = 0; i < vector_.size(); i++) {
+     for (size_t i = 0; i < vector_.size(); i++) {
        recoverAndDelete(i);
      }
    }
@@ -483,7 +601,7 @@ private:
    {
      time = vector_[0].deque.front()->header.stamp;
      index = 0;
-     for (unsigned int i = 1; i < vector_.size(); i++) {
+     for (size_t i = 1; i < vector_.size(); i++) {
        const ros::Time &t = vector_[i].deque.front()->header.stamp;
        if ((t < time) ^ end) {
          time = t;
@@ -493,7 +611,7 @@ private:
    }
 
    // ASSUMES: we have a pivot and candidate
-   ros::Time getVirtualTime(unsigned int i)
+   ros::Time getVirtualTime(size_t i)
    {
      namespace mt = ros::message_traits;
 
@@ -538,13 +656,13 @@ private:
      namespace mt = ros::message_traits;
 
      std::vector<ros::Time> virtual_times(vector_.size());
-     for (unsigned int i = 0; i < vector_.size(); i++) {
+     for (size_t i = 0; i < vector_.size(); i++) {
        virtual_times[i] = getVirtualTime(i);
      }
 
      time = virtual_times[0];
      index = 0;
-     for (unsigned int i = 0; i < vector_.size(); i++) {
+     for (size_t i = 0; i < vector_.size(); i++) {
        if ((virtual_times[i] < time) ^ end) {
          time = virtual_times[i];
          index = i;
@@ -646,7 +764,7 @@ private:
              // candidate
              // Cleanup the virtual search:
              num_non_empty_deques_ = 0; // We will recompute it from scratch
-             for (unsigned int i = 0; i < vector_.size(); i++) {
+             for (size_t i = 0; i < vector_.size(); i++) {
                recover(i, num_virtual_moves[i]);
              }
              (void)num_non_empty_deques_before_virtual_search; // unused variable warning stopper
@@ -694,3 +812,4 @@ private:
 } // namespace dataspeed_can_msg_filters
 
 #endif // _CAN_APPROXIMATE_TIME_H_
+

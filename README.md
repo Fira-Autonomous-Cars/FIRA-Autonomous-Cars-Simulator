@@ -3,9 +3,10 @@ FIRA Autonomous Cars Simulator for FIRARoboWorldCup Competition.
 The instructions necessary for getting started is available below.
 
 
+## Updated for ROS NOETIC
+### *** THIS VERISION IS STABLE!!!
+
 ### Changelog
-## 1.0.3
-  - Updated Race Track. (Priliminary Stage track)
 ## 1.0.2
   - Removed ground plane from race track world
   - Modified Race Track mesh
@@ -20,30 +21,30 @@ GPU: Intel® Iris 6100 <br/>
 RAM: 8 GB
 
 ### Software Requirements
-Ubuntu 16.04 and ROS Kinetic used exclusively. Other versions are not officially supported.
-Prior to installing our software make sure to have ROS and Catkin tools installed: http://wiki.ros.org/kinetic/Installation/Ubuntu
-```bash
-sudo apt install python-rosinstall python-rosinstall-generator python-wstool build-essential
-sudo apt-get install python-catkin-tools
-sudo apt install python-wstool
-sudo apt install ros-kinetic-ros-control 
-sudo apt-get install ros-kinetic-gazebo-ros-control ros-kinetic-position-controllers ros-kinetic-ros-controllers ros-kinetic-velodyne ros-kinetic-velodyne-driver 
-pip install catkin_pkg
+Ubuntu 16.04 and ROS Noetic used exclusively. Other versions are not officially supported.
+Prior to installing our software make sure to have ROS and Catkin tools installed: http://wiki.ros.org/noetic/Installation/Ubuntu
+```zsh
+sudo apt-get install python3-catkin-tools python3-catkin-pkg python3-osrf-pycommon
+
+sudo apt install ros-noetic-can-msgs ros-noetic-velocity-controllers ros-noetic-velodyne-pointcloud ros-noetic-teleop-twist-keyboard ros-noetic-gazebo-ros ros-noetic-gazebo-ros-control ros-noetic-gazebo-ros-pkgs ros-noetic-hector-gazebo-plugins ros-noetic-hector-gazebo-worlds ros-noetic-hector-gazebo ros-noetic-ros-controllers
 ```
 
 ### Installation
-```bash
-# Setup catkin workspace
+```zsh
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/
-catkin init
-# Add workspace to bashrc.
-echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc
+mkdir src
 cd src
-git clone https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator.git
+
+git clone https://github.com/binsdela/FIRA-Autonomous-Cars-Simulator.git
+
+catkin_init_workspace
 cd ..
 catkin_make
-source ~/.bashrc
+
+echo 'source ~/catkin_ws/devel/setup.zsh' >> ~/.zshrc
+source ~/.zshrc
+
 roslaunch avisengine_environment update_world.launch #Important : This command will update every static paths in this package. Make sure to run this, otherwise the gazebo simulator won't run correctly.
 ```
 The installation process is done.

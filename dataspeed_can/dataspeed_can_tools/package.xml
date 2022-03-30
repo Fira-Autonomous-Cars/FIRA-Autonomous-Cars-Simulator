@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>dataspeed_can_tools</name>
-  <version>1.0.4</version>
+  <version>1.0.16</version>
   <description>
     CAN bus introspection
   </description>
@@ -18,12 +18,9 @@
   <depend>rosbag</depend>
   <depend>roscpp</depend>
   <depend>roslib</depend>
-  <depend>nodelet</depend>
   <depend>std_msgs</depend>
-  <depend>dataspeed_can_msgs</depend>
+  <depend>can_msgs</depend>
 
-  <export>
-    <nodelet plugin="${prefix}/nodelets.xml" />
-  </export>
+  <test_depend>rostest</test_depend>
 
 </package>

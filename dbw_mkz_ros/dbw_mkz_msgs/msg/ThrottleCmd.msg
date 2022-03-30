@@ -6,6 +6,9 @@ uint8 pedal_cmd_type
 # Enable
 bool enable
 
+# Clear driver overrides
+bool clear
+
 # Ignore driver overrides
 bool ignore
 

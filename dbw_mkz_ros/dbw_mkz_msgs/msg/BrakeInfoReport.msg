@@ -8,6 +8,9 @@ float32 wheel_torque_actual
 # Vehicle Acceleration (m/s^2)
 float32 accel_over_ground
 
+# Brake Pedal
+QualityFactor brake_pedal_qf
+
 # Hill Start Assist
 HillStartAssist hsa
 

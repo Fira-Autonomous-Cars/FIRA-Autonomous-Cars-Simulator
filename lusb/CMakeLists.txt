@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(lusb)
 
 find_package(catkin REQUIRED)
@@ -9,9 +9,9 @@ catkin_package(
   LIBRARIES ${PROJECT_NAME} ${Boost_LIBRARIES}
 )
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
-  include
 )
 
 add_library(${PROJECT_NAME}

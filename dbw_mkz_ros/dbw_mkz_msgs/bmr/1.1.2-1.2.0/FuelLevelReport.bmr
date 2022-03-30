@@ -1,0 +1,71 @@
+class update_dbw_mkz_msgs_FuelLevelReport_f5ec1964dbda02fda82785b8035744e4(MessageUpdateRule):
+	old_type = "dbw_mkz_msgs/FuelLevelReport"
+	old_full_text = """
+Header header
+
+# Fuel level (%, 0 to 100)
+float32 fuel_level
+
+================================================================================
+MSG: std_msgs/Header
+# Standard metadata for higher-level stamped data types.
+# This is generally used to communicate timestamped data 
+# in a particular coordinate frame.
+# 
+# sequence ID: consecutively increasing ID 
+uint32 seq
+#Two-integer timestamp that is expressed as:
+# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')
+# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')
+# time-handling sugar is provided by the client library
+time stamp
+#Frame this data is associated with
+string frame_id
+"""
+
+	new_type = "dbw_mkz_msgs/FuelLevelReport"
+	new_full_text = """
+Header header
+
+# Fuel level (%, 0 to 100)
+float32 fuel_level
+
+# 12V battery voltage
+float32 battery_12v
+
+# Hybrid battery voltage
+float32 battery_hev
+
+# Odometer (km, 0.1km resolution)
+float32 odometer
+
+
+================================================================================
+MSG: std_msgs/Header
+# Standard metadata for higher-level stamped data types.
+# This is generally used to communicate timestamped data 
+# in a particular coordinate frame.
+# 
+# sequence ID: consecutively increasing ID 
+uint32 seq
+#Two-integer timestamp that is expressed as:
+# * stamp.sec: seconds (stamp_secs) since epoch (in Python the variable is called 'secs')
+# * stamp.nsec: nanoseconds since stamp_secs (in Python the variable is called 'nsecs')
+# time-handling sugar is provided by the client library
+time stamp
+#Frame this data is associated with
+string frame_id
+"""
+
+	order = 7
+	migrated_types = [
+		("Header","Header"),]
+
+	valid = True
+
+	def update(self, old_msg, new_msg):
+		self.migrate(old_msg.header, new_msg.header)
+		new_msg.fuel_level = old_msg.fuel_level
+		new_msg.battery_12v = 0.
+		new_msg.battery_hev = 0.
+		new_msg.odometer = 0.

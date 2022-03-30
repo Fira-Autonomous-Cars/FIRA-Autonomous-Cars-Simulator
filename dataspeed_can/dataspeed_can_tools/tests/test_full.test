@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Unlike other tests, this requires a rostest launch file since it uses Publishers and Subscribers. -->
+  <node ns="can_bus_test" pkg="dataspeed_can_tools" type="dbc_node" name="dbc_node" output="screen">
+    <rosparam param="dbc_files" subst_value="True">[$(find dataspeed_can_tools)/tests/Test.dbc]</rosparam>
+    <param name="expand" value="true" />
+    <param name="unknown" value="false" />
+  </node>
+  <test test-name="test_full" pkg="dataspeed_can_tools" type="test_full" />
+</launch>

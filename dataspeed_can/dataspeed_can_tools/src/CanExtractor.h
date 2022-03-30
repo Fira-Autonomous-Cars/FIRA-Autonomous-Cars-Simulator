@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2017, Dataspeed Inc.
+ *  Copyright (c) 2015-2020, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -50,13 +50,13 @@
 #include <std_msgs/Int64.h>
 #include <std_msgs/Float64.h>
 
-#include <dataspeed_can_msgs/CanMessageStamped.h>
+#include <can_msgs/Frame.h>
 #include "DbcIterator.hpp"
 
 namespace dataspeed_can_tools
 {
 
-typedef struct{
+typedef struct {
   ros::Publisher sig_pub;
   double factor;
   int length;
@@ -67,42 +67,55 @@ typedef struct{
   ByteOrder order;
   Sign sign;
   int start_bit;
+  Multiplexor multiplexor;
+  unsigned short multiplexNum;
 } RosCanSigStruct;
 
-typedef struct{
+typedef struct {
   ros::Publisher message_pub;
   std::string msg_name;
-  int id;
+  uint32_t id;
   std::vector<RosCanSigStruct> sigs;
 } RosCanMsgStruct;
 
-class CanExtractor{
+class CanExtractor {
 public:
-  CanExtractor(const std::string &dbc_file);
+  CanExtractor(const std::string &dbc_file, bool offline, bool expand = true, bool unknown = false);
+  CanExtractor(const std::vector<std::string> &dbc_file, bool offline, bool expand = true, bool unknown = false);
 
   bool getMessage(RosCanMsgStruct& can_msg);
-  void initPublishers(RosCanMsgStruct& can_msg, ros::NodeHandle& nh);
-  void openBag(std::string fname);
-  void closeBag();
-  void pubMessage(const dataspeed_can_msgs::CanMessageStamped& msg);
-  void pubMessage(const dataspeed_can_msgs::CanMessageStamped::ConstPtr& msg) { pubMessage(*msg); }
+  void initPublishers(RosCanMsgStruct& info, ros::NodeHandle& nh);
+  bool openBag(const std::string &fname, rosbag::compression::CompressionType compression = rosbag::compression::Uncompressed);
+  bool closeBag();
+  void pubMessage(const can_msgs::Frame& msg, const ros::Time &stamp = ros::Time(0));
+  void pubMessage(const can_msgs::Frame::ConstPtr& msg, const ros::Time &stamp = ros::Time(0)) { pubMessage(*msg, stamp); }
 
 private:
-
+  template<class T>
+  void writeToBag(const std::string& frame, const ros::Time& stamp, const T& msg);
+  template<class T>
+  void pubCanSig(const RosCanMsgStruct& info, const T& sig_msg, const ros::Time& stamp, size_t i);
+  void pubCanMsg(const RosCanMsgStruct& info, const can_msgs::Frame& msg, const ros::Time& stamp);
   static uint64_t unsignedSignalData(uint64_t raw_data, const RosCanSigStruct& sig_props);
   static int64_t signedSignalData(uint64_t raw_data, const RosCanSigStruct& sig_props);
+  template<class T>
+  static T buildMsg(const RosCanSigStruct& info, const uint64_t& data, bool sign);
   static int getAppropriateSize(const RosCanSigStruct& sig_props, bool output_signed);
-  static void registerCanSignalPublisher(RosCanSigStruct& can_sig, ros::NodeHandle& nh_msg);
+  static void registerCanSignalPublisher(RosCanSigStruct& info, ros::NodeHandle& nh);
 
-  ros::NodeHandle nh_;
   DBCIterator dbc_;
   rosbag::Bag bag_;
   bool bag_open_;
+  std::string bag_fname_;
+  bool offline_;
+  bool expand_;
+  bool unknown_;
 
-  std::map<int, RosCanMsgStruct> msgs_;
-  std::map<int, int> unknown_msgs_;
+  std::map<uint32_t, RosCanMsgStruct> msgs_;
+  std::map<uint32_t, int> unknown_msgs_;
 };
 
-}
+} // dataspeed_can_tools
 
 #endif /* CANEXTRACTOR_H_ */
+

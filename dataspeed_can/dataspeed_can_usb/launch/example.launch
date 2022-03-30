@@ -1,8 +1,14 @@
 <?xml version="1.0"?>
 <launch>
+  <arg name="error_topic" default="True"/> <!-- Separate topic for CAN error frames -->
+  <arg name="mac_addr" default=""/> <!-- Find device with this MAC address -->
+  <arg name="mode" default="normal"/> <!-- normal/listen-only -->
 
   <!-- CAN Bus Hardware -->
   <node pkg="dataspeed_can_usb" type="can_node" name="can_node" output="screen">
+    <param name="error_topic" value="$(arg error_topic)" />
+    <param name="mac_addr" value="$(arg mac_addr)" />
+    <param name="mode" value="$(arg mode)" />
 
     <!-- CAN Bus 1 -->
     <remap from="can_bus_1" to="can_bus_1"/>

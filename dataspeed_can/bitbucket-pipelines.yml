@@ -1,0 +1,40 @@
+pipelines:
+  default:
+    - parallel:
+      - step:
+          name: Noetic
+          image: dataspeedinc/ros:noetic
+          script:
+            - source `find /opt/ros -name setup.bash | sort | head -1` && echo $ROS_DISTRO # Source ROS environment
+            - mkdir src && mv `find -maxdepth 1 -not -name . -not -name src` src/ # Move everything into the src directory
+            - apt update && rosdep install --from-paths src --ignore-src -y # Install dependencies missing from the docker image
+            - catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
+            - catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --make-args tests
+            - catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --make-args run_tests -j1
+            - for x in build_isolated/**/test_results; do cp -r $x/ .; done && mv test_results test-results # Create top level test-results folder for Pipelines
+            - catkin_test_results build_isolated # Display test results and error on any test failure
+      - step:
+          name: Melodic
+          image: dataspeedinc/ros:melodic
+          script:
+            - source `find /opt/ros -name setup.bash | sort | head -1` && echo $ROS_DISTRO # Source ROS environment
+            - mkdir src && mv `find -maxdepth 1 -not -name . -not -name src` src/ # Move everything into the src directory
+            - apt update && rosdep install --from-paths src --ignore-src -y # Install dependencies missing from the docker image
+            - catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
+            - catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --make-args tests
+            - catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --make-args run_tests -j1
+            - for x in build_isolated/**/test_results; do cp -r $x/ .; done && mv test_results test-results # Create top level test-results folder for Pipelines
+            - catkin_test_results build_isolated # Display test results and error on any test failure
+      - step:
+          name: Kinetic
+          image: dataspeedinc/ros:kinetic
+          script:
+            - source `find /opt/ros -name setup.bash | sort | head -1` && echo $ROS_DISTRO # Source ROS environment
+            - mkdir src && mv `find -maxdepth 1 -not -name . -not -name src` src/ # Move everything into the src directory
+            - apt update && rosdep install --from-paths src --ignore-src -y # Install dependencies missing from the docker image
+            - catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release
+            - catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --make-args tests
+            - catkin_make_isolated --install -DCMAKE_BUILD_TYPE=Release --make-args run_tests -j1
+            - for x in build_isolated/**/test_results; do cp -r $x/ .; done && mv test_results test-results # Create top level test-results folder for Pipelines
+            - catkin_test_results build_isolated # Display test results and error on any test failure
+

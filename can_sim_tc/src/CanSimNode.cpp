@@ -1,6 +1,6 @@
 #include <can_sim_tc/CanSimNode.h>
 
-
+using namespace dbw_mkz_can;
 namespace can_sim_tc
 {
 
@@ -27,7 +27,7 @@ CanSimNode::CanSimNode(ros::NodeHandle &node, ros::NodeHandle &priv_nh)
 
 
     // Set up Publishers
-    pub_can_ = node.advertise<dataspeed_can_msgs::CanMessageStamped>("can_rx", 10);
+    pub_can_ = node.advertise<can_msgs::Frame>("can_rx", 10);
     pub_throttle_cmd_ = node.advertise<std_msgs::Float32>("/buscan_data/throttle_cmd", 0);
     pub_brake_cmd_ = node.advertise<std_msgs::Float32>("/buscan_data/brake_cmd", 0);
     pub_steering_cmd_ = node.advertise<std_msgs::Float32>("/buscan_data/steering_cmd", 0);
@@ -47,15 +47,15 @@ CanSimNode::~CanSimNode()
 }
 
 
-void CanSimNode::recvCAN(const dataspeed_can_msgs::CanMessage::ConstPtr& msg)
+void CanSimNode::recvCAN(const can_msgs::Frame::ConstPtr& msg)
 {
 
-  if (!msg->extended) {
+  if (!msg->is_extended) {
     switch (msg->id) {
         default:
             ROS_INFO("Message Id from CAN %i", msg->id);
-        case ID_THROTTLE_CMD:
-        if (msg->dlc >= sizeof(MsgThrottleCmd)) {
+        case dbw_mkz_can::ID_THROTTLE_CMD:
+        if (msg->dlc >= sizeof(dbw_mkz_can::MsgThrottleCmd)) {
             const MsgThrottleCmd *ptr = (const MsgThrottleCmd*)msg->data.elems;
             const uint16_t throttle_pedal_buscan_value = ptr->PCMD;
             // We have to devide by this constant because the sender multiplies by it.
@@ -127,15 +127,15 @@ void CanSimNode::recvCAN(const dataspeed_can_msgs::CanMessage::ConstPtr& msg)
 
 void CanSimNode::recvCmdVelSafe(const geometry_msgs::TwistStamped::ConstPtr& msg)
 {
-    dataspeed_can_msgs::CanMessageStamped out;
-    out.msg.id = ID_STEERING_REPORT;
-    out.msg.extended = false;
+    can_msgs::Frame out;
+    out.id = ID_STEERING_REPORT;
+    out.is_extended = false;
     // We have to use structures like the ones defined in distpatch.h
-    out.msg.dlc = sizeof(MsgSteeringReport);
+    out.dlc = sizeof(MsgSteeringReport);
 
     out.header.stamp = msg->header.stamp;
 
-    MsgSteeringReport *ptr = (MsgSteeringReport*)out.msg.data.elems;
+    MsgSteeringReport *ptr = (MsgSteeringReport*)out.data.elems;
     memset(ptr, 0x00, sizeof(*ptr));
 
     float steering_angle_speed = msg->twist.angular.z;
@@ -188,30 +188,30 @@ uint8 position_covariance_type
 */
 void CanSimNode::recvFixGps(const sensor_msgs::NavSatFix::ConstPtr& msg)
 {
-    dataspeed_can_msgs::CanMessageStamped out1;
-    dataspeed_can_msgs::CanMessageStamped out2;
-    dataspeed_can_msgs::CanMessageStamped out3;
+    can_msgs::Frame out1;
+    can_msgs::Frame out2;
+    can_msgs::Frame out3;
     
-    out1.msg.id = ID_REPORT_GPS1;
-    out2.msg.id = ID_REPORT_GPS2;
-    out3.msg.id = ID_REPORT_GPS3;
+    out1.id = ID_REPORT_GPS1;
+    out2.id = ID_REPORT_GPS2;
+    out3.id = ID_REPORT_GPS3;
     
-    out1.msg.extended = false;
-    out2.msg.extended = false;
-    out3.msg.extended = false;
+    out1.is_extended = false;
+    out2.is_extended = false;
+    out3.is_extended = false;
     
     // We have to use structures like the ones defined in distpatch.h
-    out1.msg.dlc = sizeof(MsgReportGps1);
-    out2.msg.dlc = sizeof(MsgReportGps2);
-    out3.msg.dlc = sizeof(MsgReportGps3);
+    out1.dlc = sizeof(MsgReportGps1);
+    out2.dlc = sizeof(MsgReportGps2);
+    out3.dlc = sizeof(MsgReportGps3);
 
     out1.header.stamp = msg->header.stamp;
     out2.header.stamp = msg->header.stamp;
     out3.header.stamp = msg->header.stamp;
 
-    MsgReportGps1 *ptr1 = (MsgReportGps1*)out1.msg.data.elems;
-    MsgReportGps2 *ptr2 = (MsgReportGps2*)out2.msg.data.elems;
-    MsgReportGps3 *ptr3 = (MsgReportGps3*)out3.msg.data.elems;
+    MsgReportGps1 *ptr1 = (MsgReportGps1*)out1.data.elems;
+    MsgReportGps2 *ptr2 = (MsgReportGps2*)out2.data.elems;
+    MsgReportGps3 *ptr3 = (MsgReportGps3*)out3.data.elems;
     
     memset(ptr1, 0x00, sizeof(*ptr1));
     memset(ptr2, 0x00, sizeof(*ptr2));

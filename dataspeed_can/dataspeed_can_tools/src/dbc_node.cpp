@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2015-2017, Dataspeed Inc.
+ *  Copyright (c) 2015-2020, Dataspeed Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -35,21 +35,24 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 #include "CanExtractor.h"
-#include <dataspeed_can_msgs/CanMessageStamped.h>
+#include <can_msgs/Frame.h>
 
 ros::NodeHandle *nh_;
 dataspeed_can_tools::CanExtractor* extractor_;
 
-void recvCanMessage(const dataspeed_can_msgs::CanMessageStamped::ConstPtr& msg)
+void recv(const can_msgs::Frame::ConstPtr& msg)
 {
-  dataspeed_can_tools::RosCanMsgStruct info;
-  info.id = msg->msg.id;
+  if (!msg->is_error && !msg->is_rtr) {
+    dataspeed_can_tools::RosCanMsgStruct info;
+    info.id = msg->id | (msg->is_extended ? 0x80000000 : 0x00000000);
 
-  if (extractor_->getMessage(info)) {
-    extractor_->initPublishers(info, *nh_);
+    if (extractor_->getMessage(info)) {
+      ROS_DEBUG("New message ID (%d), initializing publishers...", info.id);
+      extractor_->initPublishers(info, *nh_);
+    }
+
+    extractor_->pubMessage(msg);
   }
-
-  extractor_->pubMessage(msg);
 }
 
 int main(int argc, char** argv)
@@ -58,16 +61,24 @@ int main(int argc, char** argv)
   ros::NodeHandle nh; nh_ = &nh;
   ros::NodeHandle nh_priv("~");
 
-  std::string dbc_file;
-  if (!nh_priv.getParam("dbc_file", dbc_file)) {
+  std::vector<std::string> dbc_files;
+  if (!nh_priv.getParam("dbc_files", dbc_files)) {
     ROS_FATAL("DBC file not specified. Exiting.");
   }
+  bool expand;
+  nh_priv.param("expand", expand, true); 
+  bool unknown;
+  nh_priv.param("unknown", unknown, false); 
 
-  ROS_INFO("Opening dbc file: %s", dbc_file.c_str());
-  dataspeed_can_tools::CanExtractor extractor(dbc_file);
+  printf("Opening dbc files: \n");
+  for (unsigned int i = 0; i < dbc_files.size(); i++) {
+    printf("  - %s\n", dbc_files[i].c_str());
+  }
+  dataspeed_can_tools::CanExtractor extractor(dbc_files, false, expand, unknown);
   extractor_ = &extractor;
 
-  ros::Subscriber sub_can = nh.subscribe("can_rx", 100, recvCanMessage);
+  ros::Subscriber sub_can = nh.subscribe("can_rx", 100, recv);
 
   ros::spin();
 }
+

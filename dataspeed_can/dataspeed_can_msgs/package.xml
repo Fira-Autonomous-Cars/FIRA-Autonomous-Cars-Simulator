@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>dataspeed_can_msgs</name>
-  <version>1.0.4</version>
+  <version>1.0.11</version>
   <description>
     Controller Area Network (CAN) messages
   </description>
@@ -15,9 +15,14 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>std_msgs</depend>
+  <exec_depend>rosbag_migration_rule</exec_depend>
 
-  <build_depend>message_generation</build_depend>
-  <exec_depend>message_runtime</exec_depend>
+  <export>
+    <rosbag_migration_rule rule_file="bmr/rule1.bmr"/>
+    <rosbag_migration_rule rule_file="bmr/rule2.bmr"/>
+    <deprecated>
+      The package dataspeed_can_msgs has been deprecated with migration to can_msgs. See https://bitbucket.org/DataspeedInc/dataspeed_can/src/default/can_msgs_migration.md
+    </deprecated>
+  </export>
 
 </package>

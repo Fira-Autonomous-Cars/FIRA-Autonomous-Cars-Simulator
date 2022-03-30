@@ -1,0 +1,108 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_:
+
+
+BO_ 166 MultiplexTest: 5 Vector__XXX
+ SG_ MultiplexedD m51 : 8|32@1- (1,0) [0|0] "" Vector__XXX
+ SG_ MultiplexedC m34 : 16|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ MultiplexedB m34 : 8|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ MultiplexedA m17 : 8|8@1- (1,0) [0|0] "" Vector__XXX
+ SG_ Multiplexor M : 0|8@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 165 AdvancedTestD: 4 Vector__XXX
+ SG_ AdvancedSignal8 : 24|8@1+ (-10,0) [0|0] "" Vector__XXX
+ SG_ AdvancedSignal7 : 16|8@1- (-10,0) [0|0] "" Vector__XXX
+ SG_ AdvancedSignal6 : 8|8@1+ (10,0) [0|0] "" Vector__XXX
+ SG_ AdvancedSignal5 : 0|8@1- (10,0) [0|0] "" Vector__XXX
+
+BO_ 164 AdvancedTestC: 8 Vector__XXX
+ SG_ AdvancedSignal4 : 7|64@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 163 AdvancedTestB: 8 Vector__XXX
+ SG_ AdvancedSignal3 : 0|64@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 162 AdvancedTestA: 8 Vector__XXX
+ SG_ AdvancedSignal2 : 39|32@0- (1,0) [0|0] "" Vector__XXX
+ SG_ AdvancedSignal1 : 0|32@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 196 MotorolaTestD: 8 Vector__XXX
+ SG_ MotorolaSignalU64 : 7|64@0+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 195 MotorolaTestC: 8 Vector__XXX
+ SG_ MotorolaSignal64 : 7|64@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 194 MotorolaTestB: 8 Vector__XXX
+ SG_ MotorolaSignalU32 : 39|32@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ MotorolaSignal32 : 7|32@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 193 MotorolaTestA: 6 Vector__XXX
+ SG_ MotorolaSignalU16 : 39|16@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ MotorolaSignal16 : 23|16@0- (1,0) [0|0] "" Vector__XXX
+ SG_ MotorolaSignalU8 : 15|8@0+ (1,0) [0|0] "" Vector__XXX
+ SG_ MotorolaSignal8 : 7|8@0- (1,0) [0|0] "" Vector__XXX
+
+BO_ 180 IntelTestD: 8 Vector__XXX
+ SG_ IntelSignalU64 : 0|64@1+ (1,0) [0|0] "" Vector__XXX
+
+BO_ 179 IntelTestC: 8 Vector__XXX
+ SG_ IntelSignal64 : 0|64@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 178 IntelTestB: 8 Vector__XXX
+ SG_ IntelSignalU32 : 32|32@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ IntelSignal32 : 0|32@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 177 IntelTestA: 6 Vector__XXX
+ SG_ IntelSignalU16 : 32|16@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ IntelSignal16 : 16|16@1- (1,0) [0|0] "" Vector__XXX
+ SG_ IntelSignalU8 : 8|8@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ IntelSignal8 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 161 BasicTest: 4 Vector__XXX
+ SG_ BasicSignal4 : 24|1@1+ (1,0) [0|0] "" Vector__XXX
+ SG_ BasicSignal3 : 16|7@1- (1,18) [0|0] "" Vector__XXX
+ SG_ BasicSignal2 : 8|7@1- (1,8) [0|0] "" Vector__XXX
+ SG_ BasicSignal1 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+ LOL_ BasicSignal5 : 25|1@1+ (1,0) [0|0] "" Vector__XXX
+
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "CAN";
+SIG_VALTYPE_ 164 AdvancedSignal4 : 2;
+SIG_VALTYPE_ 163 AdvancedSignal3 : 2;
+SIG_VALTYPE_ 162 AdvancedSignal2 : 1;
+SIG_VALTYPE_ 162 AdvancedSignal1 : 1;
+
