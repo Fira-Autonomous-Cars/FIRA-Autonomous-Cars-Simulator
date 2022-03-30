@@ -1,12 +1,10 @@
 # FIRA Autonomous Cars Simulator
 FIRA Autonomous Cars Simulator for FIRARoboWorldCup Competition.
-The instructions necessary for getting started is available below.
-
-
-## Updated for ROS NOETIC
-### *** THIS VERISION IS STABLE!!!
+The instructions necessary to get started is available below.
 
 ### Changelog
+## 1.0.4
+  - Fixed and updated for ROS Noetic (Special Thanks to [Sina Moghimi](https://github.com/sinamoghimi73) for the update)
 ## 1.0.2
   - Removed ground plane from race track world
   - Modified Race Track mesh
@@ -21,7 +19,7 @@ GPU: Intel® Iris 6100 <br/>
 RAM: 8 GB
 
 ### Software Requirements
-Ubuntu 16.04 and ROS Noetic used exclusively. Other versions are not officially supported.
+Ubuntu 20.04 and ROS Noetic used exclusively. Other versions are not officially supported.
 Prior to installing our software make sure to have ROS and Catkin tools installed: http://wiki.ros.org/noetic/Installation/Ubuntu
 ```zsh
 sudo apt-get install python3-catkin-tools python3-catkin-pkg python3-osrf-pycommon
