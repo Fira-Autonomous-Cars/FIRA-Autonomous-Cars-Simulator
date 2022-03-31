@@ -34,7 +34,7 @@ cd ~/catkin_ws/
 mkdir src
 cd src
 
-git clone https://github.com/binsdela/FIRA-Autonomous-Cars-Simulator.git
+git clone https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator.git
 
 catkin_init_workspace
 cd ..
