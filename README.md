@@ -40,7 +40,7 @@ catkin_init_workspace
 cd ..
 catkin_make
 
-echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
+echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc
 source ~/.bashrc
 
 # For ZSH users
