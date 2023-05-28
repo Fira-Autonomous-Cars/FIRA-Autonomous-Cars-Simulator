@@ -149,6 +149,7 @@
         <pose frame=''>0 0 10 0 -0 0</pose>
       </light>
     </state>
+    
     <model name='unit_box'>
       <pose frame=''>9.55302 -0.445956 0.5 0 -0 0</pose>
       <link name='link'>
@@ -200,6 +201,7 @@
         <kinematic>0</kinematic>
       </link>
     </model>
+
     <model name='unit_box_0'>
       <pose frame=''>9.48182 -4.61625 0.5 0 -0 0</pose>
       <link name='link'>
@@ -251,6 +253,7 @@
         <kinematic>0</kinematic>
       </link>
     </model>
+
     <model name='unit_box_1'>
       <pose frame=''>9.46984 -7.51289 0.5 0 -0 0</pose>
       <link name='link'>
@@ -302,6 +305,7 @@
         <kinematic>0</kinematic>
       </link>
     </model>
+
     <model name='unit_cylinder'>
       <pose frame=''>-5.5789 -8.53711 0.5 0 -0 0</pose>
       <link name='link'>
@@ -355,6 +359,7 @@
         <kinematic>0</kinematic>
       </link>
     </model>
+
     <model name='unit_cylinder_0'>
       <pose frame=''>-6.27398 7.67123 0.5 0 -0 0</pose>
       <link name='link'>

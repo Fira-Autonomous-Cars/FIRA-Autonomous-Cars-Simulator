@@ -25,6 +25,11 @@
       <ambient>0.4 0.4 0.4 1</ambient>
       <background>0.7 0.7 0.7 1</background>
       <shadows>1</shadows>
+      <sky>
+        <clouds>
+          <speed>12</speed>
+        </clouds>
+      </sky>
     </scene>
     <spherical_coordinates>
       <surface_model>EARTH_WGS84</surface_model>
@@ -84,6 +89,7 @@
           <wrench>0.005594 0.001838 0.001303 0 -0 0</wrench>
         </link>
       </model>
+
       <model name='ground_plane_1'>
         <pose frame=''>34.5794 -24.3178 -0.1 0 -0 0</pose>
         <scale>1 1 1</scale>
@@ -94,7 +100,7 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='road_Intersection_1'>
+      <model name='road_intersection_1'>
         <pose frame=''>32 -48 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='road_corner_1_link'>
@@ -104,7 +110,7 @@
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='road_TIntersection_1_0'>
+      <model name='road_t_intersection_1_0'>
         <pose frame=''>32 0 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='road_corner_1_link'>
@@ -291,831 +297,7 @@
         <projection_type>perspective</projection_type>
       </camera>
     </gui>
-    <model name='catvehicle'>
-      <link name='base_link'>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-        <inertial>
-          <pose frame=''>0 0 1.0639 0 -0 0</pose>
-          <mass>2050</mass>
-          <inertia>
-            <ixx>647</ixx>
-            <ixy>0</ixy>
-            <ixz>-31</ixz>
-            <iyy>3291</iyy>
-            <iyz>0</iyz>
-            <izz>3360</izz>
-          </inertia>
-        </inertial>
-        <collision name='base_link_collision'>
-          <pose frame=''>0 0 1.3639 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>4.192 1.301 1.4478</size>
-            </box>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <collision name='base_link_fixed_joint_lump__camera_front_link_collision_1'>
-          <pose frame=''>0.75 0 2.025 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.1 0.1 0.1</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <friction>
-              <ode>
-                <mu>0.6</mu>
-                <mu2>0.5</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <collision name='base_link_fixed_joint_lump__camera_link_collision_2'>
-          <pose frame=''>0 0 2.1 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.25 0.25 0.25</size>
-            </box>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <collision name='base_link_fixed_joint_lump__velodyne_link_collision_3'>
-          <pose frame=''>0 0 2.235 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.25 0.25 0.25</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <friction>
-              <ode>
-                <mu>0.6</mu>
-                <mu2>0.5</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <collision name='base_link_fixed_joint_lump__front_laser_link_collision_4'>
-          <pose frame=''>2.4 0 0.8589 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.25 0.25 0.25</size>
-            </box>
-          </geometry>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <friction>
-              <ode>
-                <mu>0.6</mu>
-                <mu2>0.5</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name='base_link_visual'>
-          <pose frame=''>-0.25 0 1.1139 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/catvehicle_basics/catvehicle/meshes/mesh_avis_audi_car_simplified.dae</uri>
-            </mesh>
-          </geometry>
-        </visual>
-        <visual name='base_link_fixed_joint_lump__camera_front_link_visual_1'>
-          <pose frame=''>0.75 0 2.025 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.1 0.1 0.1</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <uri>__default__</uri>
-              <name>__default__</name>
-            </script>
-          </material>
-        </visual>
-        <visual name='base_link_fixed_joint_lump__camera_link_visual_2'>
-          <pose frame=''>0 0 2.1 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.25 0.25 0.25</size>
-            </box>
-          </geometry>
-        </visual>
-        <visual name='base_link_fixed_joint_lump__velodyne_link_visual_3'>
-          <pose frame=''>0 0 2.235 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/catvehicle_basics/catvehicle/meshes/hokuyo.dae</uri>
-            </mesh>
-          </geometry>
-          <material>
-            <script>
-              <uri>__default__</uri>
-              <name>__default__</name>
-            </script>
-          </material>
-        </visual>
-        <visual name='base_link_fixed_joint_lump__front_laser_link_visual_4'>
-          <pose frame=''>2.4 0 0.8589 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.25 0.25 0.25</size>
-            </box>
-          </geometry>
-          <material>
-            <script>
-              <uri>__default__</uri>
-              <name>__default__</name>
-            </script>
-          </material>
-        </visual>
-        <velocity_decay/>
-        <velocity_decay/>
-        <sensor name='camera_front' type='camera'>
-          <update_rate>30</update_rate>
-          <camera name='front'>
-            <horizontal_fov>1.39626</horizontal_fov>
-            <image>
-              <width>800</width>
-              <height>800</height>
-              <format>R8G8B8</format>
-            </image>
-            <clip>
-              <near>0.02</near>
-              <far>300</far>
-            </clip>
-            <noise>
-              <type>gaussian</type>
-              <mean>0</mean>
-              <stddev>0.007</stddev>
-            </noise>
-          </camera>
-          <plugin name='camera_front_controller' filename='libgazebo_ros_camera.so'>
-            <alwaysOn>true</alwaysOn>
-            <updateRate>0.0</updateRate>
-            <robotNamespace>/catvehicle</robotNamespace>
-            <cameraName>camera_front</cameraName>
-            <imageTopicName>image_raw_front</imageTopicName>
-            <cameraInfoTopicName>camera_front_info</cameraInfoTopicName>
-            <frameName>camera_front_link</frameName>
-            <hackBaseline>0.07</hackBaseline>
-            <distortionK1>0.0</distortionK1>
-            <distortionK2>0.0</distortionK2>
-            <distortionK3>0.0</distortionK3>
-            <distortionT1>0.0</distortionT1>
-            <distortionT2>0.0</distortionT2>
-          </plugin>
-          <pose frame=''>0.75 0 2.025 0 -0 0</pose>
-        </sensor>
-        <velocity_decay/>
-        <velocity_decay/>
-        <sensor name='lidar_sensor' type='ray'>
-          <visualize>0</visualize>
-          <update_rate>5</update_rate>
-          <ray>
-            <scan>
-              <horizontal>
-                <samples>100</samples>
-                <resolution>1</resolution>
-                <min_angle>0.3</min_angle>
-                <max_angle>-0.3</max_angle>
-              </horizontal>
-              <vertical>
-                <samples>20</samples>
-                <resolution>1</resolution>
-                <min_angle>-0.326</min_angle>
-                <max_angle>0.326</max_angle>
-              </vertical>
-            </scan>
-            <range>
-              <min>3</min>
-              <max>20</max>
-              <resolution>0.02</resolution>
-            </range>
-          </ray>
-          <plugin name='laser_controller' filename='libgazebo_ros_block_laser.so'>
-            <frameName>velodyne_link</frameName>
-            <hokuyoMinIntensity>101</hokuyoMinIntensity>
-            <robotNamespace>/catvehicle</robotNamespace>
-            <topicName>lidar_points</topicName>
-            <gaussianNoise>0.02</gaussianNoise>
-            <updateRate>5</updateRate>
-          </plugin>
-          <pose frame=''>0 0 2.235 0 -0 0</pose>
-        </sensor>
-        <velocity_decay/>
-        <gravity>1</gravity>
-        <velocity_decay/>
-        <self_collide>0</self_collide>
-        <sensor name='sick_lms291' type='ray'>
-          <visualize>1</visualize>
-          <update_rate>50</update_rate>
-          <ray>
-            <scan>
-              <horizontal>
-                <samples>180</samples>
-                <resolution>1</resolution>
-                <min_angle>-1.57</min_angle>
-                <max_angle>1.57</max_angle>
-              </horizontal>
-              <vertical>
-                <samples>1</samples>
-                <min_angle>0</min_angle>
-                <max_angle>0</max_angle>
-              </vertical>
-            </scan>
-            <range>
-              <min>1.5</min>
-              <max>80</max>
-              <resolution>0.05</resolution>
-            </range>
-          </ray>
-          <plugin name='sick_lms291_controller' filename='libgazebo_ros_laser.so'>
-            <topicName>/catvehicle/front_laser_points</topicName>
-            <frameName>front_laser_link</frameName>
-            <gaussianNoise>0.02</gaussianNoise>
-            <robotNamespace>/</robotNamespace>
-          </plugin>
-          <pose frame=''>2.4 0 0.8589 0 -0 0</pose>
-        </sensor>
-        <kinematic>0</kinematic>
-      </link>
-      <link name='back_left_wheel_link'>
-        <pose frame=''>-1.41 0.765 0.66 0 -0 0</pose>
-        <inertial>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <mass>40</mass>
-          <inertia>
-            <ixx>2</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>2</iyy>
-            <iyz>0</iyz>
-            <izz>2</izz>
-          </inertia>
-        </inertial>
-        <collision name='back_left_wheel_link_collision'>
-          <pose frame=''>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <cylinder>
-              <length>0.229</length>
-              <radius>0.356</radius>
-            </cylinder>
-          </geometry>
-          <surface>
-            <contact>
-              <ode>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>10</max_vel>
-                <min_depth>0.01</min_depth>
-              </ode>
-            </contact>
-            <friction>
-              <ode>
-                <mu>1e+07</mu>
-                <mu2>1e+07</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name='back_left_wheel_link_visual'>
-          <pose frame=''>0 0 0 0 -0 1.5708</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/catvehicle_basics/catvehicle/meshes/mesh_avis_small_wheel_simplified.dae</uri>
-            </mesh>
-          </geometry>
-          <material>
-            <script>
-              <uri>__default__</uri>
-              <name>__default__</name>
-            </script>
-          </material>
-        </visual>
-        <gravity>1</gravity>
-        <velocity_decay/>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-      </link>
-      <joint name='back_left_wheel_joint' type='revolute'>
-        <child>back_left_wheel_link</child>
-        <parent>base_link</parent>
-        <axis>
-          <xyz>0 1 0</xyz>
-          <limit>
-            <lower>-1e+16</lower>
-            <upper>1e+16</upper>
-          </limit>
-          <dynamics>
-            <damping>0.1</damping>
-            <friction>0</friction>
-            <spring_reference>0</spring_reference>
-            <spring_stiffness>0</spring_stiffness>
-          </dynamics>
-          <use_parent_model_frame>1</use_parent_model_frame>
-        </axis>
-      </joint>
-      <link name='back_right_wheel_link'>
-        <pose frame=''>-1.41 -0.765 0.66 0 -0 0</pose>
-        <inertial>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <mass>40</mass>
-          <inertia>
-            <ixx>2</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>2</iyy>
-            <iyz>0</iyz>
-            <izz>2</izz>
-          </inertia>
-        </inertial>
-        <collision name='back_right_wheel_link_collision'>
-          <pose frame=''>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <cylinder>
-              <length>0.229</length>
-              <radius>0.356</radius>
-            </cylinder>
-          </geometry>
-          <surface>
-            <contact>
-              <ode>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>10</max_vel>
-                <min_depth>0.01</min_depth>
-              </ode>
-            </contact>
-            <friction>
-              <ode>
-                <mu>1e+07</mu>
-                <mu2>1e+07</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name='back_right_wheel_link_visual'>
-          <pose frame=''>0 0 0 0 0 -1.5708</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/catvehicle_basics/catvehicle/meshes/mesh_avis_small_wheel_simplified.dae</uri>
-            </mesh>
-          </geometry>
-          <material>
-            <script>
-              <uri>__default__</uri>
-              <name>__default__</name>
-            </script>
-          </material>
-        </visual>
-        <gravity>1</gravity>
-        <velocity_decay/>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-      </link>
-      <joint name='back_right_wheel_joint' type='revolute'>
-        <child>back_right_wheel_link</child>
-        <parent>base_link</parent>
-        <axis>
-          <xyz>0 1 0</xyz>
-          <limit>
-            <lower>-1e+16</lower>
-            <upper>1e+16</upper>
-          </limit>
-          <dynamics>
-            <damping>0.1</damping>
-            <friction>0</friction>
-            <spring_reference>0</spring_reference>
-            <spring_stiffness>0</spring_stiffness>
-          </dynamics>
-          <use_parent_model_frame>1</use_parent_model_frame>
-        </axis>
-      </joint>
-      <link name='front_left_steering_link'>
-        <pose frame=''>1.41 0.6555 0.66 0 -0 0</pose>
-        <inertial>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <mass>10</mass>
-          <inertia>
-            <ixx>0.4</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.6</iyy>
-            <iyz>0</iyz>
-            <izz>0.4</izz>
-          </inertia>
-        </inertial>
-        <collision name='front_left_steering_link_collision'>
-          <pose frame=''>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <cylinder>
-              <length>0.01</length>
-              <radius>0.1</radius>
-            </cylinder>
-          </geometry>
-          <surface>
-            <contact>
-              <ode>
-                <kp>1e+06</kp>
-                <kd>0.1</kd>
-                <max_vel>10</max_vel>
-                <min_depth>0.01</min_depth>
-              </ode>
-            </contact>
-            <friction>
-              <ode>
-                <mu>0.6</mu>
-                <mu2>0.5</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name='front_left_steering_link_visual'>
-          <pose frame=''>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <cylinder>
-              <length>0.01</length>
-              <radius>0.1</radius>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>__default__</uri>
-              <name>__default__</name>
-            </script>
-          </material>
-        </visual>
-        <gravity>1</gravity>
-        <velocity_decay/>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-      </link>
-      <joint name='front_left_steering_joint' type='revolute'>
-        <child>front_left_steering_link</child>
-        <parent>base_link</parent>
-        <axis>
-          <xyz>0 0 1</xyz>
-          <limit>
-            <lower>-0.6</lower>
-            <upper>0.6</upper>
-            <effort>1e+06</effort>
-            <velocity>10000</velocity>
-          </limit>
-          <dynamics>
-            <damping>100</damping>
-            <friction>0</friction>
-            <spring_reference>0</spring_reference>
-            <spring_stiffness>0</spring_stiffness>
-          </dynamics>
-          <use_parent_model_frame>1</use_parent_model_frame>
-        </axis>
-      </joint>
-      <link name='front_left_wheel_link'>
-        <pose frame=''>1.41 0.775 0.66 0 -0 0</pose>
-        <inertial>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <mass>40</mass>
-          <inertia>
-            <ixx>2</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>2</iyy>
-            <iyz>0</iyz>
-            <izz>2</izz>
-          </inertia>
-        </inertial>
-        <collision name='front_left_wheel_link_collision'>
-          <pose frame=''>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <cylinder>
-              <length>0.229</length>
-              <radius>0.356</radius>
-            </cylinder>
-          </geometry>
-          <surface>
-            <contact>
-              <ode>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>100</max_vel>
-                <min_depth>0.01</min_depth>
-              </ode>
-            </contact>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name='front_left_wheel_link_visual'>
-          <pose frame=''>0 0 0 0 -0 1.5708</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/catvehicle_basics/catvehicle/meshes/mesh_avis_small_wheel_simplified.dae</uri>
-            </mesh>
-          </geometry>
-          <material>
-            <script>
-              <uri>__default__</uri>
-              <name>__default__</name>
-            </script>
-          </material>
-        </visual>
-        <gravity>1</gravity>
-        <velocity_decay/>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-      </link>
-      <joint name='front_left_wheel_joint' type='revolute'>
-        <child>front_left_wheel_link</child>
-        <parent>front_left_steering_link</parent>
-        <axis>
-          <xyz>0 1 0</xyz>
-          <limit>
-            <lower>-1e+16</lower>
-            <upper>1e+16</upper>
-          </limit>
-          <dynamics>
-            <damping>0.1</damping>
-            <friction>0</friction>
-            <spring_reference>0</spring_reference>
-            <spring_stiffness>0</spring_stiffness>
-          </dynamics>
-          <use_parent_model_frame>1</use_parent_model_frame>
-        </axis>
-      </joint>
-      <link name='front_right_steering_link'>
-        <pose frame=''>1.41 -0.6555 0.66 0 -0 0</pose>
-        <inertial>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <mass>10</mass>
-          <inertia>
-            <ixx>0.4</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.6</iyy>
-            <iyz>0</iyz>
-            <izz>0.4</izz>
-          </inertia>
-        </inertial>
-        <collision name='front_right_steering_link_collision'>
-          <pose frame=''>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <cylinder>
-              <length>0.01</length>
-              <radius>0.1</radius>
-            </cylinder>
-          </geometry>
-          <surface>
-            <contact>
-              <ode>
-                <kp>1e+06</kp>
-                <kd>0.1</kd>
-                <max_vel>10</max_vel>
-                <min_depth>0.01</min_depth>
-              </ode>
-            </contact>
-            <friction>
-              <ode>
-                <mu>0.6</mu>
-                <mu2>0.5</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name='front_right_steering_link_visual'>
-          <pose frame=''>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <cylinder>
-              <length>0.01</length>
-              <radius>0.1</radius>
-            </cylinder>
-          </geometry>
-          <material>
-            <script>
-              <uri>__default__</uri>
-              <name>__default__</name>
-            </script>
-          </material>
-        </visual>
-        <gravity>1</gravity>
-        <velocity_decay/>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-      </link>
-      <joint name='front_right_steering_joint' type='revolute'>
-        <child>front_right_steering_link</child>
-        <parent>base_link</parent>
-        <axis>
-          <xyz>0 0 1</xyz>
-          <limit>
-            <lower>-0.6</lower>
-            <upper>0.6</upper>
-            <effort>1e+06</effort>
-            <velocity>10000</velocity>
-          </limit>
-          <dynamics>
-            <damping>100</damping>
-            <friction>0</friction>
-            <spring_reference>0</spring_reference>
-            <spring_stiffness>0</spring_stiffness>
-          </dynamics>
-          <use_parent_model_frame>1</use_parent_model_frame>
-        </axis>
-      </joint>
-      <link name='front_right_wheel_link'>
-        <pose frame=''>1.41 -0.775 0.66 0 -0 0</pose>
-        <inertial>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <mass>40</mass>
-          <inertia>
-            <ixx>2</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>2</iyy>
-            <iyz>0</iyz>
-            <izz>2</izz>
-          </inertia>
-        </inertial>
-        <collision name='front_right_wheel_link_collision'>
-          <pose frame=''>0 0 0 1.5708 -0 0</pose>
-          <geometry>
-            <cylinder>
-              <length>0.229</length>
-              <radius>0.356</radius>
-            </cylinder>
-          </geometry>
-          <surface>
-            <contact>
-              <ode>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>100</max_vel>
-                <min_depth>0.01</min_depth>
-              </ode>
-            </contact>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-              </ode>
-              <torsional>
-                <ode/>
-              </torsional>
-            </friction>
-            <bounce/>
-          </surface>
-          <max_contacts>10</max_contacts>
-        </collision>
-        <visual name='front_right_wheel_link_visual'>
-          <pose frame=''>0 0 0 0 0 -1.5708</pose>
-          <geometry>
-            <mesh>
-              <scale>1 1 1</scale>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/catvehicle_basics/catvehicle/meshes/mesh_avis_small_wheel_simplified.dae</uri>
-            </mesh>
-          </geometry>
-          <material>
-            <script>
-              <uri>__default__</uri>
-              <name>__default__</name>
-            </script>
-          </material>
-        </visual>
-        <gravity>1</gravity>
-        <velocity_decay/>
-        <self_collide>0</self_collide>
-        <kinematic>0</kinematic>
-      </link>
-      <joint name='front_right_wheel_joint' type='revolute'>
-        <child>front_right_wheel_link</child>
-        <parent>front_right_steering_link</parent>
-        <axis>
-          <xyz>0 1 0</xyz>
-          <limit>
-            <lower>-1e+16</lower>
-            <upper>1e+16</upper>
-          </limit>
-          <dynamics>
-            <damping>0.1</damping>
-            <friction>0</friction>
-            <spring_reference>0</spring_reference>
-            <spring_stiffness>0</spring_stiffness>
-          </dynamics>
-          <use_parent_model_frame>1</use_parent_model_frame>
-        </axis>
-      </joint>
-      <plugin name='gazebo_ros_control' filename='libgazebo_ros_control.so'>
-        <robotNamespace>/catvehicle</robotNamespace>
-        <robotParam>robot_description</robotParam>
-        <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
-      </plugin>
-      <plugin name='joint_state_publisher' filename='libgazebo_ros_joint_state_publisher.so'>
-        <jointName>back_left_wheel_joint, back_right_wheel_joint, front_left_steering_joint, front_right_steering_joint, front_right_wheel_joint, front_left_wheel_joint</jointName>
-        <updateRate>50.0</updateRate>
-        <robotNamespace>/catvehicle</robotNamespace>
-        <alwaysOn>true</alwaysOn>
-      </plugin>
-      <plugin name='cmdvel_controller' filename='libcatvehiclegazebo.so'>
-        <robotNamespace>/catvehicle</robotNamespace>
-      </plugin>
-      <static>0</static>
-      <plugin name='novatel_gps_sim' filename='libhector_gazebo_ros_gps.so'>
-        <alwaysOn>1</alwaysOn>
-        <updateRate>10.0</updateRate>
-        <bodyName>base_link</bodyName>
-        <topicName>fix</topicName>
-        <velocityTopicName>fix_velocity</velocityTopicName>
-        <drift>5.0 5.0 5.0</drift>
-        <gaussianNoise>0.1 0.1 0.1</gaussianNoise>
-        <velocityDrift>0 0 0</velocityDrift>
-        <velocityGaussianNoise>0.1 0.1 0.1</velocityGaussianNoise>
-        <robotNamespace>/</robotNamespace>
-      </plugin>
-      <pose frame=''>-0.08 -0.09 0.785 0 -0 0</pose>
-    </model>
+   
     <model name='road_corner_1_0'>
       <link name='road_corner_1_link'>
         <pose frame=''>0 0 0 0 -0 0</pose>
@@ -1137,7 +319,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae</uri>
+              <uri>model://mesh_road_corner.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1156,7 +338,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae</uri>
+              <uri>model://mesh_road_corner.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1283,7 +465,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1302,7 +484,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1379,7 +561,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_Tintersection.dae</uri>
+              <uri>model://mesh_road_Tintersection.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1398,7 +580,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_Tintersection.dae</uri>
+              <uri>model://mesh_road_Tintersection.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1473,7 +655,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1492,7 +674,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1568,7 +750,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae</uri>
+              <uri>model://mesh_road_corner.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1587,7 +769,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae</uri>
+              <uri>model://mesh_road_corner.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1663,7 +845,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1682,7 +864,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1758,7 +940,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1777,7 +959,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1853,7 +1035,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1872,7 +1054,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1949,7 +1131,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_intersection.dae</uri>
+              <uri>model://mesh_road_intersection.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1968,7 +1150,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_intersection.dae</uri>
+              <uri>model://mesh_road_intersection.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2043,7 +1225,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2062,7 +1244,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2138,7 +1320,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae</uri>
+              <uri>model://mesh_road_corner.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2157,7 +1339,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae</uri>
+              <uri>model://mesh_road_corner.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2233,7 +1415,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2252,7 +1434,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2328,7 +1510,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2347,7 +1529,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2423,7 +1605,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2442,7 +1624,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2518,7 +1700,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae</uri>
+              <uri>model://mesh_road_corner.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2537,7 +1719,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae</uri>
+              <uri>model://mesh_road_corner.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2613,7 +1795,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2632,7 +1814,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_straight.dae</uri>
+              <uri>model://mesh_road_straight.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2770,7 +1952,7 @@
         <visual name='road_corner_1_visual'>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_util_sign.dae</uri>
+              <uri>model://mesh_util_sign.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -2797,7 +1979,7 @@
           <pose frame=''>0 0 0 0 -0 0</pose>
           <geometry>
             <mesh>
-              <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_util_sign.dae</uri>
+              <uri>model://mesh_util_sign.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
