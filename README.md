@@ -4,6 +4,8 @@ FIRA Autonomous Cars Simulator for FIRARoboWorldCup Competition.
 The instructions necessary to get started is available below.
 
 # Changelog
+## 1.1.1
+- Removed the excess model_updater.py
 ## 1.1.0
 - Added new urban track
 - Added new AprilTags models system for gazebo
