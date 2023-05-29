@@ -91,18 +91,19 @@ The car can also be driven manually by launching the following command:
 ```bash
 roslaunch catvehicle_tests cmdvel_unsafetest.launch 
 ```
-use the keys in your keyboard to drive the car manually: <br/>
-i : Move Forward <br/>
-, : Move Backward <br/>
-<br/>
-u : Turn Left and Forward <br/>
-o : Turn Right and Forward <br/>
-<br/>
-m : Turn Left and Backward <br/>
-. : Turn Right and Backward <br/>
-<br/>
-k : Center and stop <br/>
-q, z : Increase or decrease speed <br/>
+Use your keyboard to drive the car manually: <br/>
+| Key |  Action |
+|--|--|
+|i  |Move Forward  |
+|,  | Move Backward |
+|u  | Turn Left and Forward |
+|o  | Turn Right and Forward |
+|m  | Turn Left and Backward |
+|.   |  Turn Right and Backward |
+|k  | Center and stop |
+|q, z  |  Increase or decrease speed  |
+
+
 
 ## Usage of the example package
 The example package in [/example_pkg](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/tree/main/example_pkg)  demonstrates a basic usage of the simulator in python. 
