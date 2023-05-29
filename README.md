@@ -74,7 +74,7 @@ roslaunch avisengine_environment track_race_simple.launch
 ```
 
 ### Urban Track
-Launching the following command will start the gazebo simulator in the race track.
+Launching the following command will start the gazebo simulator in the urban track.
 ```bash
 roslaunch avisengine_environment track_urban_simple.launch 
 ```
