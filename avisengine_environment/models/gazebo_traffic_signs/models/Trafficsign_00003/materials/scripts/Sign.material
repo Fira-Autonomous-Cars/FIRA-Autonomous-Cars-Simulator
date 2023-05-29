@@ -1,0 +1,17 @@
+material Trafficsign_00003
+{
+  technique
+  {
+    pass
+    {
+      lighting off
+      texture_unit
+      {
+        texture sign_00003.png
+        filtering none none none
+        scale 1.0 1.0
+      }
+    }
+  }
+}
+
