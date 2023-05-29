@@ -106,7 +106,7 @@ Use your keyboard to drive the car manually: <br/>
 
 
 ## Usage of the example package
-The example package in [/example_pkg](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/tree/main/example_pkg)  demonstrates a basic usage of the simulator in python. 
+The example package in [/example_pkg](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/tree/main/example_pkg)  demonstrates a basic usage of the simulator written in python. 
 [/example_pkg/src/drive.py](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/example_pkg/src/drive.py) is used to drive the vehicle and [/example_pkg/src/imageReceive.py](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/example_pkg/src/imageReceive.py) is used to receive image from the vehicle. 
 The drive node uses Twist message to control the vehicle through the /catvehicle/cmd_vel topic.
 You can easily plug your code and use the basic topics in the simulator.
