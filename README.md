@@ -44,9 +44,7 @@ sudo apt install ros-noetic-can-msgs ros-noetic-velocity-controllers ros-noetic-
 ## Installation
 ```zsh
 mkdir -p ~/catkin_ws/src
-cd ~/catkin_ws/
-mkdir src
-cd src
+cd ~/catkin_ws/src
 
 git clone https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator.git
 
