@@ -1,7 +1,7 @@
 
 # FIRA Autonomous Cars Simulator
-FIRA Autonomous Cars Simulator for FIRARoboWorldCup Competition.
-The instructions necessary to get started is available below.
+FIRA Autonomous Cars Simulator for FIRA RoboWorld Cup Competition.
+The instructions necessary to get started are available below.
 
 # Changelog
 ## 1.1.1
@@ -22,9 +22,9 @@ The instructions necessary to get started is available below.
 ## 1.0.2
   - Removed ground plane from race track world
   - Modified Race Track mesh
-  - Changed initial position of the car to be on the track
-  - Added an example_pkg package to demonstrate a basic usage of topics and driving the vehicle
-  - Modified the ambient color of the scene in the race track
+  - Changed the initial position of the car to be on the track
+  - Added an example_pkg package to demonstrate basic usage of topics and driving the vehicle
+  - Modified the ambient color of the scene on the race track
   - Added sky and clouds to the race track
 
 ## Tested Minimum Local Hardware Requirements
@@ -33,7 +33,7 @@ GPU: Intel® Iris 6100 <br/>
 RAM: 8 GB
 
 ## Software Requirements
-Ubuntu 20.04 and ROS Noetic used exclusively. Other versions are not officially supported.
+Ubuntu 20.04 and ROS Noetic are used exclusively. Other versions are not officially supported.
 Prior to installing our software make sure to have ROS and Catkin tools installed: http://wiki.ros.org/noetic/Installation/Ubuntu
 ```zsh
 sudo apt-get install python3-catkin-tools python3-catkin-pkg python3-osrf-pycommon
@@ -106,7 +106,7 @@ Use your keyboard to drive the car manually: <br/>
 ## Usage of the example package
 The example package in [/example_pkg](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/tree/main/example_pkg)  demonstrates a basic usage of the simulator written in python. 
 [/example_pkg/src/drive.py](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/example_pkg/src/drive.py) is used to drive the vehicle and [/example_pkg/src/imageReceive.py](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/example_pkg/src/imageReceive.py) is used to receive image from the vehicle. 
-The drive node uses Twist message to control the vehicle through the /catvehicle/cmd_vel topic.
+The drive node uses the Twist message to control the vehicle through the /catvehicle/cmd_vel topic.
 You can easily plug your code and use the basic topics in the simulator.
 
 ## Customizing the Tracks
@@ -141,8 +141,8 @@ You can easily plug your code and use the basic topics in the simulator.
 | Urban Track Model| [avisengine_environment/meshes/mesh_road_urban.blend](https://github.com/Fira-Autonomous-Cars/FIRA-Autonomous-Cars-Simulator/blob/main/avisengine_environment/meshes/mesh_road_urban.blend)
 
 
-You can customize both race track and urban track (base) by modifying the 3D files using [Blender](https://www.blender.org/) which is a free and **open-source 3D computer graphics software**.
-The instructions on how to modify this file is written in the blender file. 
+You can customize both the race track and urban track (base) by modifying the 3D files using [Blender](https://www.blender.org/) which is a free and **open-source 3D computer graphics software**.
+The instructions on how to modify this file are written in the blender file. 
 
 ### Modify Urban Signs and Tags
 Modifying the signs and AprilTags in the urban track can be done by modifying the urban world file, or by just simply adding other tags from the gazebo model library, since all the signs and tags are also added to the library and are ready to use. 
