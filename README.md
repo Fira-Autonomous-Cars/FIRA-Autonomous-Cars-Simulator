@@ -4,8 +4,13 @@ FIRA Autonomous Cars Simulator for FIRA RoboWorld Cup Competition.
 The instructions necessary to get started are available below.
 
 # Changelog
+## 1.1.2
+- Dropped the dependency from the `gazebo_apriltag` submodule.
+- Added `model.config` to `gazebo_apriltag`.
+
 ## 1.1.1
 - Removed the excess model_updater.py
+
 ## 1.1.0
 - Added new urban track
 - Added new AprilTags models system for gazebo
