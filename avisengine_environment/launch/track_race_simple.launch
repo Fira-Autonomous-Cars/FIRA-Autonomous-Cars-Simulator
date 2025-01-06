@@ -1,7 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <launch>
-  <env name="GAZEBO_MODEL_PATH" value="$GAZEBO_MODEL_PATH:$(find avisengine_environment)/models"/>
+  <env name="GAZEBO_MODEL_PATH" value="$GAZEBO_MODEL_PATH:$(find avisengine_environment)/models:$(find avisengine_environment)/models/gazebo_apriltag/models:$(find avisengine_environment)/models/gazebo_traffic_signs/models"/>
+
   <include file="$(find catvehicle_gazebo)/launch/catvehicle_gazebo_main.launch">
     <arg name="world_name" value="$(find avisengine_environment)/worlds/world_race.world"/>
   </include>
+  
 </launch>

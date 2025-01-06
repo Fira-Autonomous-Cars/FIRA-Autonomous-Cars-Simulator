@@ -116,7 +116,7 @@ int main( int argc, char **argv )
    */
 	n.param("dist_topic", dist_topic, std::string("dist"));
 	n.param("angle_topic", angle_topic, std::string("angle"));
-	n.param("scan_topic", scan_topic, std::string("/scan"));
+	n.param("scan_topic", scan_topic, std::string("/catvehicle/front_laser_points"));
 //	n.param("angle_min", angle_min, -M_PI/32.0f);
 //	n.param("angle_max", angle_max, M_PI/32.0f);
 	n.param("angle_min", angle_min, -0.1);

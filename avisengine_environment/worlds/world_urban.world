@@ -421,12 +421,12 @@
             <origin pose="0 0 0 0 0 0"/>
             <collision name="road_corner_1_collision">
                 <geometry>
-                    <mesh><uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae"</uri></mesh>
+                    <mesh><uri>package://avisengine_environment/meshes/mesh_road_corner.dae"</uri></mesh>
                 </geometry>
             </collision>
             <visual name="road_corner_1_visual" cast_shadows="false">
                 <geometry>
-                    <mesh><uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road_corner.dae"</uri></mesh>
+                    <mesh><uri>package://avisengine_environment/meshes/mesh_road_corner.dae"</uri></mesh>
                 </geometry>
             </visual>
             <gravity>0</gravity>

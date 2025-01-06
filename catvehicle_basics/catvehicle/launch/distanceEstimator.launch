@@ -33,8 +33,8 @@ This launch file loads the worlds and models for the azcar
 
 <node pkg="catvehicle" type="distanceEstimator" name="distanceEstimator" output="screen"
             required="true">
-	<param name="scan_topic" value="/scan"/>
-	<param name="scan_topic" value="/$(arg robot)/scan"/>
+	<!-- <param name="scan_topic" value="/scan"/> -->
+	<param name="scan_topic" value="/$(arg robot)/front_laser_points"/>
 	<param name="dist_topic" value="dist"/>
 	<param name="angle_topic" value="angle"/>
 	<param name="angle_min" value="-0.1"/>

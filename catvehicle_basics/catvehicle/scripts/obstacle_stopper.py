@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from geometry_msgs.msg import Twist
-from std_msgs.msg import Float32
+from std_msgs.msg import Float64
 
 class ObstacleStopper(object):
     def __init__(self, minimum_distance=0.0):
@@ -11,7 +11,7 @@ class ObstacleStopper(object):
         
     def cmdvel_callback(self,data):
         try:
-            closest_distance = rospy.wait_for_message('/distanceEstimator/dist', Float32, timeout=1).data
+            closest_distance = rospy.wait_for_message('/distanceEstimator/dist', Float64, timeout=1).data
         except:
             rospy.logwarn("Time out /distanceEstimator/dist")
             closest_distance = None

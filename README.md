@@ -83,7 +83,9 @@ roslaunch avisengine_environment track_urban_simple.launch
 ```
 
 ### Topics
-You can get the front camera image from /catvehicle/camera_front/image_raw_front/compressed topic and can send control commands using a Twist message to /catvehicle/cmd_vel.
+You can get the front camera image from /**catvehicle/camera_front/image_raw_front/compressed** topic and can send control commands using a Twist message to /catvehicle/cmd_vel. You can also get the LaserScan of the front of the vehicle in the **/catvehicle/front_laser_points/** topic.
+
+**For this competition you must use the vehicle/ topics as input, which translate to CAN BUS data internally. For example, you can use /vehicle/gear_cmd to set the gear of the car, and /vehicle/throttle_cmd to move forward.** To see an example of this, check out the example_pkg!
 
 Get a list of topics by running the following command:
 ```bash

@@ -20,7 +20,7 @@
       <visual name="race_track_visual">
         <geometry>
           <mesh>
-            <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road.dae</uri>
+            <uri>package://avisengine_environment/meshes/mesh_road.dae</uri>
           </mesh>
         </geometry>
         <pose frame="">0 0 0 0 -0 0</pose>
@@ -38,7 +38,7 @@
         <pose frame="">0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>/home/amirmohammad/ros_avisengine_ws/src/autonomous_vehicle/avisengine_environment/meshes/mesh_road.dae</uri>
+            <uri>package://avisengine_environment/meshes/mesh_road.dae</uri>
           </mesh>
         </geometry>
         <surface>
